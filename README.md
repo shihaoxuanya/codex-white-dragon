@@ -4,6 +4,16 @@
 
 这是非官方个人项目，与 OpenAI 及角色原作者没有官方关联。
 
+## 效果预览
+
+**变身时刻**
+
+![变身时刻](assets/transformation.png)
+
+**白龙娘形态**
+
+![白龙娘形态](assets/dragon-form.png)
+
 ## 使用要求
 
 - Windows，安装在默认位置的 Microsoft Edge。
@@ -44,9 +54,3 @@
 | `character-before.png` | 变身前立绘 |
 | `character-dragon.png` | 变身后立绘 |
 | `white-dragon-icon.ico` | 可选的快捷方式图标 |
-
-## 素材与归属
-
-角色立绘由图像生成工具生成和编辑，参考了 [GPT 娘三视图](https://genderswapai.com/zh-CN/ai-gijinka/gpt)及 [ZipZipPipe 发布的角色三视图](https://www.bilibili.com/opus/1238613841710940181)；角色设计归 ZipZipPipe。背景由图像生成工具生成。图中的交织结饰为生成的手绘近似。
-
-以上是来源说明，并不代表已取得角色设计及相关素材的公开分发授权。公开发布前请核实相关权利；本项目尚未指定代码或素材的开源许可证。

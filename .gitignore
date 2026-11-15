@@ -1,0 +1,6 @@
+# Local browser profiles and diagnostics
+*.log
+*.log.old
+.edge-*/
+.chrome-*/
+.diagnostic/

@@ -1,0 +1,637 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Codex · 白龙序章</title>
+<style>
+:root{color-scheme:dark;--ink:#071711;--mint:#a6f8cf;--pearl:#f1fff7;--gold:#d6c593}
+*{box-sizing:border-box}
+html,body{width:100%;height:100%;margin:0;overflow:hidden;background:#071711}
+body{font-family:"Segoe UI","Microsoft YaHei UI",sans-serif;color:var(--pearl)}
+button{font:inherit}
+.stage{position:relative;isolation:isolate;width:100%;height:100%;overflow:hidden;background:radial-gradient(ellipse at 70% 45%,#225c48 0%,#102c23 33%,#071711 76%)}
+.stage:after{content:"";position:absolute;inset:0;pointer-events:none;z-index:20;background:linear-gradient(180deg,rgba(2,12,8,.28),transparent 22%,transparent 74%,rgba(2,12,8,.5)),repeating-linear-gradient(0deg,transparent 0 3px,rgba(255,255,255,.012) 4px);box-shadow:inset 0 0 11vw #03120b}
+.atmosphere{position:absolute;inset:-35%;background:radial-gradient(ellipse at 67% 52%,rgba(87,212,164,.23),transparent 25%),radial-gradient(ellipse at 47% 54%,rgba(106,199,154,.14),transparent 29%),radial-gradient(ellipse at 72% 37%,rgba(219,204,148,.1),transparent 25%);filter:blur(20px);animation:atmosphere 14s ease-in-out infinite alternate}
+canvas{position:absolute;inset:0;width:100%;height:100%;z-index:3;pointer-events:none}
+.grid{position:absolute;inset:44% -30% -70%;transform:perspective(550px) rotateX(62deg);background-image:linear-gradient(rgba(163,245,201,.13) 1px,transparent 1px),linear-gradient(90deg,rgba(163,245,201,.13) 1px,transparent 1px);background-size:72px 72px;mask-image:linear-gradient(transparent,#000 24%,transparent 73%);opacity:.43;animation:grid 12s linear both}
+.orbit{position:absolute;left:66%;top:50%;width:min(66vw,85vh);aspect-ratio:1;translate:-50% -50%;border:1px solid rgba(195,255,218,.36);border-radius:50%;box-shadow:0 0 30px rgba(123,255,192,.13),inset 0 0 45px rgba(188,255,204,.08);opacity:0;animation:orbitReveal 12s both}
+.orbit:before,.orbit:after{content:"";position:absolute;border-radius:50%;inset:5%;border:1px solid rgba(182,251,207,.2)}
+.orbit:before{inset:-3%;border-color:transparent rgba(169,255,209,.62) transparent rgba(232,215,157,.6);animation:spin 11s linear infinite}
+.orbit:after{inset:9%;border-style:dashed;border-color:rgba(200,255,221,.35);animation:spin 25s linear infinite reverse}
+.orbital-mark{position:absolute;left:8%;top:16%;width:7px;height:7px;border-radius:50%;background:#e7fff0;box-shadow:0 0 12px 4px #8dffba}
+.beam{position:absolute;z-index:7;left:-20%;top:46%;width:150%;height:2px;background:linear-gradient(90deg,transparent,#8cffbb,#fff,#dbd4a3,transparent);box-shadow:0 0 15px 3px #a5ffd0,0 0 60px 10px #56dd99;transform:rotate(-9deg) scaleX(0);opacity:0;animation:beam 12s ease-out both}
+.scanner{position:absolute;z-index:6;left:46%;right:5%;height:2px;top:0;background:linear-gradient(90deg,transparent,#c2ffe0,#fff,#b5ffd2,transparent);box-shadow:0 0 18px 3px #a3ffca;opacity:0;animation:scan 12s ease-in-out both}
+.character-wrap{position:absolute;z-index:4;inset:0;overflow:hidden;opacity:0;animation:characterEntrance 12s cubic-bezier(.16,.75,.18,1) both}
+.character{position:absolute;right:4%;bottom:2%;height:92%;width:57%;object-fit:contain;object-position:center bottom;filter:drop-shadow(0 0 40px rgba(177,255,204,.23));animation:float 5s ease-in-out 4s infinite alternate}
+.character[hidden]{display:none}
+.edge-light{position:absolute;right:7%;top:7%;width:51%;height:88%;background:radial-gradient(ellipse,rgba(157,255,197,.2),transparent 64%);filter:blur(24px)}
+.copy{position:absolute;z-index:9;left:9%;top:48%;transform:translateY(-43%);width:47%;opacity:0;animation:copyReveal 12s both}
+.eyebrow{display:flex;align-items:center;gap:13px;color:#b1ebcb;font-size:clamp(9px,1vw,13px);letter-spacing:.32em;font-weight:600;text-transform:uppercase}
+.eyebrow:before{content:"";display:block;width:33px;height:1px;background:var(--gold);box-shadow:0 0 9px var(--gold)}
+h1{font-size:clamp(55px,8.1vw,130px);line-height:.98;letter-spacing:.085em;margin:22px 0 16px;font-weight:300;text-shadow:0 0 35px rgba(170,255,204,.25)}
+h1 span{font-weight:700}
+.subtitle{font-size:clamp(13px,1.25vw,18px);letter-spacing:.24em;color:#e4f9e9;margin:0}
+.divider{width:clamp(130px,18vw,260px);height:1px;background:linear-gradient(90deg,#ddd39e,#9bf9c2,transparent);margin:29px 0 16px}
+.small{font-size:clamp(9px,.85vw,12px);letter-spacing:.22em;color:#a4cdb5;text-transform:uppercase}
+.frame{position:absolute;inset:25px;z-index:8;pointer-events:none;border:1px solid rgba(214,255,229,.12)}
+.frame:before,.frame:after{content:"";position:absolute;width:54px;height:54px;border-color:#c1f6d5;border-style:solid;opacity:.6}
+.frame:before{left:-1px;top:-1px;border-width:1px 0 0 1px}.frame:after{right:-1px;bottom:-1px;border-width:0 1px 1px 0}
+.topline{position:absolute;left:4.1%;right:4.1%;top:6%;z-index:12;display:flex;justify-content:space-between;gap:1em;font-size:10px;letter-spacing:.22em;color:#b7e2c7}
+.topline span:last-child{color:#cfcba8}
+.status{position:absolute;left:4.1%;bottom:7%;z-index:12;display:flex;align-items:center;gap:12px;font-size:11px;letter-spacing:.2em;color:#cceada}
+.status i{display:block;width:6px;height:6px;background:#a1ffca;border-radius:50%;box-shadow:0 0 14px #a1ffca;animation:pulse 1.4s ease-in-out infinite}
+.controls{position:absolute;right:4.1%;bottom:6%;z-index:30;display:flex;gap:10px}
+button{border:1px solid rgba(204,255,221,.38);background:rgba(4,26,15,.68);color:#eafff0;border-radius:2px;padding:10px 16px;letter-spacing:.08em;font-size:12px;cursor:pointer;backdrop-filter:blur(8px)}
+button:hover{background:rgba(106,181,135,.28);border-color:#e6fff0}button:focus-visible{outline:2px solid #d2ffe2;outline-offset:3px}button:disabled{opacity:.55;cursor:default}
+.replay{display:none}.finished .replay{display:block}.finished .skip{display:none}.launcher .controls{display:none}
+@keyframes atmosphere{to{transform:translate(-3%,2%) scale(1.12)}}
+@keyframes spin{to{transform:rotate(360deg)}}@keyframes pulse{50%{opacity:.35;transform:scale(.7)}}
+@keyframes grid{from{background-position:0 0}to{background-position:0 72px}}
+@keyframes orbitReveal{0%,8%{opacity:0;transform:scale(.6) rotate(-45deg)}25%{opacity:1;transform:scale(1) rotate(0)}90%,100%{opacity:.75;transform:scale(1) rotate(10deg)}}
+@keyframes beam{0%,18%{opacity:0;transform:rotate(-9deg) scaleX(0)}23%{opacity:1;transform:rotate(-9deg) scaleX(1)}30%,100%{opacity:0;transform:rotate(-9deg) scaleX(1)}}
+@keyframes scan{0%,15%{top:12%;opacity:0}18%{opacity:1}34%{top:88%;opacity:.8}39%,100%{top:88%;opacity:0}}
+@keyframes characterEntrance{0%,19%{opacity:0;transform:translateX(8%) scale(1.04);filter:brightness(3) blur(12px)}38%{opacity:1;filter:brightness(1) blur(0)}58%,100%{opacity:1;transform:translateX(0) scale(1)}}
+@keyframes copyReveal{0%,27%{opacity:0;transform:translate(-25px,-43%);filter:blur(10px)}48%,100%{opacity:1;transform:translate(0,-43%);filter:blur(0)}}
+@keyframes float{to{transform:translateY(-1.3%)}}
+@media(max-width:700px){.frame{inset:14px}.topline{left:7%;right:7%;font-size:8px}.copy{left:7%;top:39%;width:66%}h1{font-size:clamp(40px,9vw,64px)}.subtitle{font-size:12px}.character{right:-17%;width:77%;height:84%;opacity:.85}.orbit{left:68%;width:90vw}.status{left:7%;bottom:6%;font-size:10px}.controls{right:6%;bottom:5%}.small{letter-spacing:.14em}}
+/* The opening is a luminous sanctuary: a slow architectural reveal, a
+   restrained gold instrument ring, and a local violet shadow for the figure. */
+:root{color-scheme:light;--ink:#263a3b;--pearl:#fffaf0;--gold:#a17f4d}
+html,body{background:#e5e1d6;color:var(--ink)}
+.stage{background:#dfd8c7}
+.stage:before{content:"";position:absolute;z-index:-2;inset:-2%;background:#e5ded0 url('celestial-background.png') center center/cover no-repeat;animation:sanctuary 12s ease-out both}
+.stage:after{z-index:1;background:linear-gradient(90deg,rgba(244,241,230,.82) 0%,rgba(244,241,230,.55) 32%,rgba(242,239,226,.06) 60%,rgba(239,232,213,.05) 100%),linear-gradient(180deg,rgba(255,250,234,.15),transparent 18%,transparent 78%,rgba(55,46,42,.25));box-shadow:inset 0 0 9vw rgba(72,64,60,.13)}
+.atmosphere{inset:-12%;z-index:-1;background:radial-gradient(ellipse at 69% 48%,rgba(93,87,111,.39),transparent 35%),radial-gradient(ellipse at 46% 4%,rgba(255,249,219,.55),transparent 43%);filter:blur(28px);animation:atmosphere 14s ease-in-out infinite alternate}
+.grid{opacity:.16;background-image:linear-gradient(rgba(143,120,79,.24) 1px,transparent 1px),linear-gradient(90deg,rgba(143,120,79,.24) 1px,transparent 1px);mask-image:linear-gradient(transparent,#000 25%,transparent 68%)}
+.orbit{left:68%;width:min(67vw,86vh);border-color:rgba(255,246,209,.73);box-shadow:0 0 32px rgba(255,236,178,.22),inset 0 0 70px rgba(255,237,181,.14)}
+.orbit:before,.orbit:after{border-color:rgba(243,221,174,.49)}
+.orbit:before{border-color:transparent rgba(255,245,204,.95) transparent rgba(168,137,93,.75)}
+.orbit:after{border-color:rgba(255,248,221,.59)}
+.orbital-mark{background:#fffdf1;box-shadow:0 0 14px 4px #f4d692}
+.beam{background:linear-gradient(90deg,transparent,#d9bd80,#fffdf0,#efd9a4,transparent);box-shadow:0 0 16px 3px #fce9bd,0 0 60px 10px #ebd5a4}
+.scanner{height:1px;background:linear-gradient(90deg,transparent,#ecd5a3,#fff,#ecd5a3,transparent);box-shadow:0 0 16px 2px #fae3af}
+.edge-light{right:8%;top:7%;width:49%;height:85%;background:radial-gradient(ellipse at 50% 45%,rgba(100,91,105,.23),rgba(191,165,138,.1) 35%,transparent 67%);filter:blur(24px)}
+.character{filter:drop-shadow(0 9px 18px rgba(68,57,65,.25)) drop-shadow(0 0 24px rgba(255,232,185,.19))}
+.copy{left:8.7%;top:47%;width:43%}
+.eyebrow{color:#665b49;letter-spacing:.3em;font-size:clamp(9px,.85vw,12px)}
+.eyebrow:before{background:#a78556;box-shadow:none}
+h1{font-family:Georgia,'Times New Roman',serif;font-weight:400;font-size:clamp(55px,7.4vw,116px);letter-spacing:.06em;color:#273b3b;text-shadow:0 3px 22px rgba(255,255,244,.65)}
+h1 span{font-weight:400}
+.subtitle{color:#4b554e;letter-spacing:.27em}
+.divider{height:1px;background:linear-gradient(90deg,#a98a59,#d6c19b,transparent)}
+.small{color:#6b695c;letter-spacing:.2em}
+.frame{inset:25px;border-color:rgba(142,118,79,.28)}
+.frame:before,.frame:after{border-color:#b0925e;opacity:.7}
+.topline{color:#5a594e;text-shadow:0 1px 8px rgba(255,250,229,.8)}
+.topline span:last-child{color:#6a604f}
+.status{color:#424c45;text-shadow:0 1px 8px rgba(255,250,229,.9)}
+.status i{background:#9e855a;box-shadow:0 0 12px #f9e5b2}
+button{border-color:rgba(105,87,62,.55);background:rgba(248,244,231,.86);color:#3c403a;box-shadow:0 3px 16px rgba(58,49,40,.1)}
+button:hover{background:#fffaf0;border-color:#947548}button:focus-visible{outline-color:#81612f}
+@keyframes sanctuary{from{transform:scale(1.06);filter:brightness(.88)}to{transform:scale(1);filter:brightness(1)}}
+/* A choreographed reveal: light sweeps across the temple immediately, a
+   geometric seal assembles, then the portrait breaks through the light. */
+.stage:before{animation:none;transform-origin:68% 48%;will-change:transform}
+.stage.playing:before{animation:temple-camera 12s cubic-bezier(.18,.58,.2,1) both}
+.rays{position:absolute;inset:-15%;z-index:2;overflow:hidden;pointer-events:none;mix-blend-mode:screen}
+.rays i{position:absolute;top:-30%;left:70%;height:155%;width:14%;transform-origin:50% 0;background:linear-gradient(90deg,transparent,rgba(255,250,220,.72),transparent);opacity:0}
+.playing .rays i{animation:ray-sweep 12s ease-in-out both}
+.rays i:nth-child(1){--angle:-52deg;--angle2:-34deg;--delay:0s}
+.rays i:nth-child(2){--angle:-29deg;--angle2:-12deg;--delay:.2s;width:9%}
+.rays i:nth-child(3){--angle:-9deg;--angle2:11deg;--delay:.4s;width:7%}
+.rays i:nth-child(4){--angle:12deg;--angle2:27deg;--delay:.1s;width:11%}
+.rays i:nth-child(5){--angle:34deg;--angle2:48deg;--delay:.5s;width:6%}
+.playing .rays i{animation-delay:var(--delay)}
+.seal{position:absolute;z-index:3;left:68%;top:49%;width:min(70vw,88vh);aspect-ratio:1;translate:-50% -50%;overflow:visible;pointer-events:none;opacity:0;filter:drop-shadow(0 0 9px rgba(255,234,166,.75))}
+.playing .seal{animation:seal-intro 12s ease-out both}
+.seal .outer,.seal .inner{transform-origin:center;transform-box:fill-box}
+.playing .seal .outer{animation:spin 14s linear infinite}
+.playing .seal .inner{animation:spin 10s linear infinite reverse}
+.seal circle,.seal path,.seal polygon{fill:none;stroke:#a77932;stroke-width:1.55;vector-effect:non-scaling-stroke}
+.seal .thin{stroke:#997345;stroke-width:1;opacity:.92}
+.seal .accent{stroke:#fff9db;stroke-width:2.2}
+.flare{position:absolute;z-index:8;inset:0;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 68% 47%,rgba(255,255,242,.8),rgba(255,238,190,.25) 17%,transparent 50%);mix-blend-mode:screen}
+.playing .flare{animation:flare-hit 12s ease-out both}
+.orbit{animation:none}.playing .orbit{animation:orbitReveal 12s both}
+.beam{animation:none}.playing .beam{animation:beam 12s ease-out both}
+.scanner{animation:none}.playing .scanner{animation:scan 12s ease-in-out both}
+.character-wrap{animation:none}.playing .character-wrap{animation:hero-reveal 12s ease-out both}
+.copy{animation:none}.playing .copy{animation:copyReveal 12s both}
+.character{animation:none;mask-image:linear-gradient(to bottom,#000 0%,#000 52%,transparent 82%);mask-size:100% 220%;mask-position:0 0;mask-repeat:no-repeat}
+.playing .character{animation:portrait-resolve 12s ease-out both,hero-drift 5.8s ease-in-out 4.5s infinite alternate}
+.character-wrap:before{content:"";position:absolute;left:53%;bottom:1%;width:34%;height:8%;pointer-events:none;background:radial-gradient(ellipse,rgba(112,92,68,.22),rgba(244,221,179,.14) 38%,transparent 72%);filter:blur(8px)}
+.character-wrap:after{content:"";position:absolute;pointer-events:none;right:4%;top:0;width:55%;height:100%;opacity:0;background:linear-gradient(122deg,transparent 30%,rgba(255,244,216,.24) 47%,transparent 63%);mix-blend-mode:screen;transform:translateX(-16%)}
+.playing .character-wrap:after{animation:portrait-light 12s ease-out both}
+.stage.finished:before,.stage.finished *,.stage.finished *:before,.stage.finished *:after{animation-play-state:paused!important}
+@keyframes temple-camera{0%{transform:scale(1.14) translate(-1%,1%)}28%{transform:scale(1.10) translate(-.4%,.4%)}60%{transform:scale(1.06) translate(0,0)}100%{transform:scale(1.03) translate(0,0)}}
+@keyframes ray-sweep{0%{opacity:.55;transform:rotate(var(--angle)) translateX(-24%)}16%{opacity:.85}35%{opacity:.32;transform:rotate(var(--angle2)) translateX(10%)}65%{opacity:.48}100%{opacity:.18;transform:rotate(var(--angle2)) translateX(25%)}}
+@keyframes seal-intro{0%{opacity:.3;transform:scale(.35) rotate(-95deg)}10%{opacity:.95;transform:scale(.92) rotate(-25deg)}27%{opacity:.9;transform:scale(1.08) rotate(6deg)}42%{opacity:.55;transform:scale(1) rotate(0)}80%,100%{opacity:.44;transform:scale(1.03) rotate(6deg)}}
+@keyframes flare-hit{0%,13%{opacity:0}21%{opacity:.34}31%{opacity:.2}42%{opacity:.08}55%,100%{opacity:0}}
+@keyframes hero-reveal{0%,12%{opacity:0;transform:translate(1.1%,1%) scale(1.025)}20%{opacity:.25}30%{opacity:.82}39%,100%{opacity:1;transform:translate(0,0) scale(1)}}
+@keyframes portrait-resolve{0%,12%{mask-position:0 100%}36%,100%{mask-position:0 0}}
+@keyframes portrait-light{0%,12%{opacity:0;transform:translateX(-16%)}20%{opacity:.55}40%{opacity:.22;transform:translateX(12%)}55%,100%{opacity:0;transform:translateX(20%)}}
+@keyframes hero-drift{from{transform:translateY(.15%)}to{transform:translateY(-.55%)}}
+/* A single camera carries the temple, figure and light together. The UI is
+   outside this layer so captions and controls remain still and readable. */
+.stage:before{content:none;animation:none}
+.camera{position:absolute;inset:0;z-index:0;isolation:isolate;overflow:visible;transform-origin:68% 22%;will-change:transform}
+.camera:before{content:"";position:absolute;inset:-3%;z-index:-2;background:#e5ded0 url('celestial-background.png') center/cover no-repeat}
+.stage.playing .camera{animation:cinematic-camera 12s linear both}
+.stage.finished .camera{animation-play-state:paused!important}
+.playing .character-wrap{animation:hero-visibility 12s ease-out both}
+.playing .copy{animation:title-arrival 12s ease-out both}
+@keyframes cinematic-camera{
+  0%{transform:scale(1.04);animation-timing-function:cubic-bezier(.2,.45,.24,1)}
+  22%{transform:scale(1.12) translate(-.6%,.4%);animation-timing-function:cubic-bezier(.4,0,.2,1)}
+  42%{transform:scale(1.48) translate(-3%,1.4%);animation-timing-function:ease-in-out}
+  53%{transform:scale(1.50) translate(-2.7%,1.4%);animation-timing-function:cubic-bezier(.45,0,.2,1)}
+  76%{transform:scale(1.02) translate(0,0);animation-timing-function:ease-out}
+  100%{transform:scale(1.02) translate(0,0)}
+}
+@keyframes hero-visibility{0%,12%{opacity:0}20%{opacity:.25}30%{opacity:.82}39%,100%{opacity:1}}
+@keyframes title-arrival{0%,55%{opacity:0;transform:translate(-18px,-43%)}75%,100%{opacity:1;transform:translate(0,-43%)}}
+@media(max-width:700px){.camera{transform-origin:67% 27%}.stage.playing .camera{animation-name:cinematic-camera-small}}
+@keyframes cinematic-camera-small{0%{transform:scale(1.04)}28%{transform:scale(1.11)}45%{transform:scale(1.22) translate(-1%,1%)}55%{transform:scale(1.22) translate(-1%,1%)}78%,100%{transform:scale(1.02)}}
+/* The illumination belongs to the subject, rather than covering the scene.
+   The shared camera keeps the architecture and figure moving together. */
+.divine-light{position:absolute;z-index:2;left:68%;top:21%;width:min(55vw,72vh);aspect-ratio:1;translate:-50% -50%;pointer-events:none;opacity:0;background:radial-gradient(circle,rgba(255,249,229,.55) 0%,rgba(239,216,160,.20) 29%,rgba(150,118,85,.10) 49%,transparent 73%)}
+.divine-light:before,.divine-light:after{content:"";position:absolute;inset:18%;border-radius:50%;border:1px solid rgba(255,241,195,.78);box-shadow:0 0 20px rgba(255,234,174,.34),inset 0 0 18px rgba(255,247,219,.20)}
+.divine-light:after{inset:15%;border-color:rgba(164,125,68,.38);box-shadow:none}
+.playing .divine-light{animation:divine-breathe 12s ease-out both}
+.atmosphere{background:radial-gradient(ellipse at 68% 36%,rgba(79,70,75,.34),transparent 34%),radial-gradient(ellipse at 67% 2%,rgba(255,247,218,.34),transparent 42%)}
+.rays{opacity:.50}.seal{opacity:0}.playing .seal{animation:sacred-seal 12s ease-out both}.seal circle,.seal path,.seal polygon{stroke:#ac8a59;stroke-width:.85}.seal .accent{stroke:#fff3cd;stroke-width:1.2}
+.scanner,.beam{display:none}.flare{background:radial-gradient(ellipse at 68% 22%,rgba(255,250,226,.34),rgba(247,226,185,.10) 22%,transparent 52%)}
+.edge-light{background:radial-gradient(ellipse at 50% 38%,rgba(73,65,74,.28),rgba(167,138,111,.12) 39%,transparent 69%)}
+.playing .character-wrap{animation:sacred-reveal 12s ease-out both}
+.playing .character{animation:sacred-resolve 12s ease-out both,hero-drift 5.8s ease-in-out 4.5s infinite alternate}
+.stage.playing .camera{animation-name:sacred-camera}
+@keyframes divine-breathe{0%{opacity:.15;transform:scale(.85)}13%{opacity:.58}28%{opacity:.88;transform:scale(1)}60%{opacity:.73}82%,100%{opacity:.48;transform:scale(1.02)}}
+@keyframes sacred-seal{0%{opacity:.04;transform:scale(.65) rotate(-35deg)}22%{opacity:.24;transform:scale(1) rotate(0)}60%{opacity:.14}82%,100%{opacity:.2;transform:scale(1.02) rotate(5deg)}}
+@keyframes sacred-reveal{0%{opacity:.04}10%{opacity:.38}22%{opacity:.88}30%,100%{opacity:1}}
+@keyframes sacred-resolve{0%{mask-position:0 85%}26%,100%{mask-position:0 0}}
+@keyframes title-arrival{0%,72%{opacity:0;transform:translate(-18px,-43%)}88%,100%{opacity:1;transform:translate(0,-43%)}}
+@keyframes sacred-camera{
+  0%{transform:scale(1.05) translate(-1%,0);animation-timing-function:cubic-bezier(.25,.4,.25,1)}
+  18%{transform:scale(1.20) translate(-4%,1.5%);animation-timing-function:cubic-bezier(.35,0,.22,1)}
+  39%{transform:scale(1.55) translate(-10%,5%);animation-timing-function:ease-in-out}
+  55%{transform:scale(1.56) translate(-9.7%,5%);animation-timing-function:cubic-bezier(.45,0,.18,1)}
+  78%,100%{transform:scale(1.02) translate(0,0)}
+}
+@media(max-width:700px){.stage.playing .camera{animation-name:cinematic-camera-small}.divine-light{left:68%;top:27%;width:78vw}}
+@media(max-width:700px){.copy{left:7%;top:39%;width:67%}.character{right:-13%;width:77%;height:84%;opacity:.92}.stage:after{background:linear-gradient(90deg,rgba(247,242,228,.84),rgba(247,242,228,.47) 48%,transparent 80%),linear-gradient(0deg,rgba(58,47,40,.25),transparent 25%)}}
+/* The transformation is a sequence rather than a single portrait reveal.
+   Both illustrations occupy the same frame; a soft light veil links them. */
+.character-before,.character-after{mask-image:none;opacity:0}
+.playing .character-wrap{animation:transformation-presence 12s ease-out both}
+.playing .character-before{animation:before-form 12s linear both}
+.playing .character-after{animation:after-form 12s linear both}
+.before-missing .character-before{display:none}
+.playing .before-missing .character-after{opacity:1;animation:sacred-resolve 12s ease-out both}
+.transformation-light{position:absolute;z-index:6;left:68%;top:48%;width:min(56vw,76vh);height:92%;translate:-50% -50%;pointer-events:none;opacity:0;mix-blend-mode:screen;background:radial-gradient(ellipse at 50% 48%,rgba(255,249,219,.64),rgba(255,235,185,.35) 30%,transparent 69%)}
+.transformation-light:before,.transformation-light:after{content:"";position:absolute;left:9%;right:9%;top:48%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,238,184,.95),#fff,rgba(255,239,186,.95),transparent);box-shadow:0 0 10px 2px rgba(255,228,167,.75);transform:rotate(-8deg)}
+.transformation-light:after{transform:rotate(8deg);opacity:.75}
+.playing .transformation-light{animation:transformation-glow 12s ease-in-out both}
+.transformation-halo{position:absolute;z-index:6;left:68%;top:50%;width:min(64vw,82vh);height:86%;translate:-50% -50%;pointer-events:none;opacity:0;perspective:800px}
+.transformation-halo i{--lean:-18deg;--tilt:68deg;position:absolute;left:3%;top:31%;width:94%;height:37%;border:2px solid rgba(211,155,76,.85);border-radius:50%;box-shadow:0 0 9px #f7d78f,inset 0 0 9px #fff2c8,0 0 20px rgba(236,194,116,.45);transform:rotateZ(var(--lean)) rotateX(var(--tilt))}
+.transformation-halo i:nth-child(2){--lean:35deg;--tilt:62deg;left:10%;width:80%;top:34%;height:29%;border-color:rgba(255,255,238,.95)}
+.transformation-halo i:nth-child(3){--lean:-50deg;--tilt:54deg;left:16%;width:68%;top:37%;height:23%;border-width:2px;border-color:rgba(148,100,178,.85)}
+.playing .transformation-halo{animation:halo-crescendo 12s ease-in-out both}
+.playing .transformation-halo i{animation:halo-orbit 2.4s linear infinite}
+.playing .transformation-halo i:nth-child(2){animation-direction:reverse;animation-duration:2s}
+.playing .transformation-halo i:nth-child(3){animation-duration:1.6s}
+@keyframes transformation-presence{0%{opacity:0}8%{opacity:1}100%{opacity:1}}
+@keyframes before-form{0%,7%{opacity:0}14%,27%{opacity:1}31%{opacity:.95}36%{opacity:.45}41%,100%{opacity:0}}
+@keyframes after-form{0%,29%{opacity:0;mask-image:linear-gradient(to bottom,#000 0%,#000 40%,transparent 82%);mask-size:100% 220%;mask-position:0 100%}34%{opacity:.25}39%{opacity:.82}45%,100%{opacity:1;mask-image:linear-gradient(to bottom,#000 0%,#000 40%,transparent 82%);mask-size:100% 220%;mask-position:0 0}}
+@keyframes transformation-glow{0%,19%{opacity:0;transform:scale(.65)}28%{opacity:.25;transform:scale(.82)}34%{opacity:.62;transform:scale(.98)}37%{opacity:.78;transform:scale(1.04)}44%{opacity:.38;transform:scale(1.12)}53%,100%{opacity:0;transform:scale(1.18)}}
+@keyframes halo-crescendo{0%,20%{opacity:0;transform:scale(.65)}28%{opacity:.45;transform:scale(.86)}36%{opacity:.95;transform:scale(1)}43%{opacity:.65;transform:scale(1.08)}54%,100%{opacity:0;transform:scale(1.16)}}
+@keyframes halo-orbit{from{transform:rotateZ(var(--lean)) rotateX(var(--tilt)) rotateZ(0deg)}to{transform:rotateZ(var(--lean)) rotateX(var(--tilt)) rotateZ(360deg)}}
+/* A concentrated build, one release, then drifting light: the bright center
+   is brief so the face and the two forms remain visible throughout. */
+.awakening-sigil,.awakening-rays,.awakening-column,.awakening-wave{position:absolute;left:68%;top:48%;translate:-50% -50%;pointer-events:none;opacity:0}
+.awakening-sigil{z-index:3;width:min(82vw,104vh);aspect-ratio:1;overflow:visible;filter:drop-shadow(0 0 5px rgba(255,218,143,.9))}
+.awakening-sigil circle,.awakening-sigil path,.awakening-sigil polygon{fill:none;stroke:#be8439;stroke-width:2;vector-effect:non-scaling-stroke}
+.awakening-sigil .inner-glyph circle,.awakening-sigil .inner-glyph polygon{stroke:#9870a8;stroke-width:2.5}
+.awakening-sigil .inner-glyph{opacity:.78}
+.awakening-sigil .light{stroke:#fff4c9;stroke-width:3;filter:drop-shadow(0 0 4px #e7aa50)}
+.awakening-sigil .glyph{transform-origin:300px 300px}
+.playing .awakening-sigil{animation:awakening-sigil 12s ease-out both}
+.playing .awakening-sigil .outer-glyph{animation:spin 4.5s linear infinite}
+.playing .awakening-sigil .inner-glyph{animation:spin 3.4s linear infinite reverse}
+.awakening-rays{z-index:5;width:min(100vw,130vh);aspect-ratio:1;border-radius:50%;background:repeating-conic-gradient(from 4deg,transparent 0deg 7deg,rgba(197,145,77,.5) 7.4deg 8deg,transparent 8.8deg 15deg,rgba(155,119,185,.35) 15.4deg 15.8deg,transparent 16.3deg 22deg);mask-image:radial-gradient(circle,transparent 0 15%,#000 38%,transparent 72%)}
+.playing .awakening-rays{animation:awakening-rays 12s ease-out both}
+.awakening-column{z-index:6;width:min(45vw,60vh);height:140%;mix-blend-mode:screen;background:linear-gradient(90deg,transparent,rgba(249,216,155,.1) 20%,rgba(255,246,211,.65) 42%,rgba(255,255,245,.82) 50%,rgba(246,228,255,.5) 57%,rgba(253,230,182,.12) 80%,transparent);filter:blur(3px)}
+.playing .awakening-column{animation:awakening-column 12s ease-out both}
+.awakening-wave{z-index:7;width:min(43vw,58vh);aspect-ratio:1;border:3px solid rgba(255,248,216,.96);border-radius:50%;box-shadow:0 0 10px 3px #fff5cb,0 0 34px 9px rgba(231,180,94,.72),inset 0 0 22px rgba(255,228,172,.7)}
+.awakening-wave:after{content:"";position:absolute;inset:6%;border:2px solid rgba(203,168,238,.9);border-radius:50%;box-shadow:0 0 12px rgba(220,190,255,.85)}
+.playing .awakening-wave{animation:awakening-wave 12s ease-out both}
+@keyframes awakening-sigil{0%,21%{opacity:0;transform:scale(.52) rotate(-30deg)}28%{opacity:.75;transform:scale(.8) rotate(-12deg)}35%{opacity:1;transform:scale(1.08) rotate(4deg)}43%{opacity:.8;transform:scale(1.2) rotate(12deg)}54%,100%{opacity:0;transform:scale(1.35) rotate(18deg)}}
+@keyframes awakening-rays{0%,25%{opacity:0;transform:scale(.4) rotate(-18deg)}32%{opacity:.42;transform:scale(.8) rotate(-8deg)}36%{opacity:.92;transform:scale(1) rotate(0)}43%{opacity:.55;transform:scale(1.26) rotate(12deg)}53%,100%{opacity:0;transform:scale(1.45) rotate(20deg)}}
+@keyframes awakening-column{0%,27%{opacity:0;transform:scaleX(.12)}33%{opacity:.18;transform:scaleX(.65)}36%{opacity:.5;transform:scaleX(1)}39%{opacity:.34;transform:scaleX(.85)}47%,100%{opacity:0;transform:scaleX(.3)}}
+@keyframes awakening-wave{0%,34%{opacity:0;transform:scale(.2)}36%{opacity:1;transform:scale(.3)}45%{opacity:.6;transform:scale(1.6)}54%,100%{opacity:0;transform:scale(2.3)}}
+/* Fine iridescent currents and floating petals soften the geometry without
+   hiding the portrait or interrupting the transformation's crescendo. */
+.silk-light,.light-petals{position:absolute;left:68%;top:50%;width:min(82vw,104vh);height:min(82vw,104vh);translate:-50% -50%;pointer-events:none;opacity:0}
+.silk-light{z-index:7;overflow:visible}
+.silk-light path{fill:none;stroke:url(#silk-gradient);stroke-linecap:round;stroke-width:2.5;stroke-dasharray:280 1150;filter:drop-shadow(0 0 3px rgba(255,239,211,.8))}
+.silk-light .silk-glow{stroke-width:6;opacity:.42;stroke-dasharray:180 1250}
+.playing .silk-light{animation:silk-reveal 12s ease-in-out both}
+.playing .silk-light path{animation:silk-flow 3.8s linear infinite}
+.playing .silk-light .silk-glow{animation-duration:4.8s;animation-direction:reverse}
+.light-petals{z-index:6}
+.light-petals i{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:calc(var(--size) * 1.7);border-radius:90% 5% 90% 8%;background:linear-gradient(145deg,rgba(255,255,249,.98),rgba(227,199,239,.75) 55%,rgba(205,169,214,.48));box-shadow:0 0 7px rgba(255,240,222,.8);opacity:0;transform:rotate(var(--angle))}
+.playing .light-petals{animation:petal-reveal 12s ease-in-out both}
+.playing .light-petals i{animation:petal-drift 4.2s ease-in-out infinite alternate;animation-delay:var(--delay)}
+@keyframes silk-reveal{0%,19%{opacity:0;transform:scale(.78)}29%{opacity:.6;transform:scale(.92)}37%{opacity:.95;transform:scale(1)}53%{opacity:.72;transform:scale(1.06)}70%,100%{opacity:0;transform:scale(1.1)}}
+@keyframes silk-flow{to{stroke-dashoffset:-1430}}
+@keyframes petal-reveal{0%,22%{opacity:0}31%{opacity:.6}40%{opacity:1}57%{opacity:.85}75%,100%{opacity:0}}
+@keyframes petal-drift{0%{opacity:.25;transform:translate(0,12px) rotate(var(--angle)) scale(.75)}45%{opacity:.9}100%{opacity:.55;transform:translate(var(--drift),-44px) rotate(calc(var(--angle) + 75deg)) scale(1)}}
+/* Light follows the outside of the wings, behind the portrait rather than
+   over her face. The threads flare during the reveal and drift away. */
+.winglight{position:absolute;z-index:3;left:68%;top:45%;width:min(83vw,100vh);height:min(53vw,65vh);translate:-50% -50%;overflow:visible;pointer-events:none;opacity:0}
+.winglight path{fill:none;stroke:url(#winglight-gradient);stroke-linecap:round;vector-effect:non-scaling-stroke}
+.winglight .winglight-trace{stroke-width:1.3;opacity:.52}
+.winglight .winglight-current{stroke-width:3;stroke-dasharray:95 800;filter:drop-shadow(0 0 4px rgba(255,235,172,.85))}
+.winglight .winglight-star{fill:#fff7d7;stroke:#d5a968;stroke-width:.7;opacity:.82;transform-box:fill-box;transform-origin:center}
+.playing .winglight{animation:winglight-reveal 12s ease-in-out both}
+.playing .winglight .winglight-current{animation:winglight-flow 2.8s linear infinite}
+.playing .winglight .winglight-current.reverse{animation-direction:reverse;animation-duration:3.4s}
+.playing .winglight .winglight-star{animation:winglight-glint 2.6s ease-in-out infinite alternate}
+.winglight g:nth-of-type(2) .winglight-star{animation-delay:-1.1s}
+.winglight g:nth-of-type(3) .winglight-star{animation-delay:-2s}
+@keyframes winglight-reveal{0%,25%{opacity:0;transform:scale(.82)}35%{opacity:.56;transform:scale(.96)}43%{opacity:.95;transform:scale(1)}58%{opacity:.64;transform:scale(1.03)}78%,100%{opacity:0;transform:scale(1.07)}}
+@keyframes winglight-flow{to{stroke-dashoffset:-895}}
+@keyframes winglight-glint{from{opacity:.35;transform:scale(.65) rotate(-10deg)}to{opacity:1;transform:scale(1.2) rotate(10deg)}}
+/* Once the transformation settles, a luminous crown and slow-moving
+   starlight frame the figure without covering her face or wings. */
+.ascension-rays,.ascension-crown,.ascension-motes,.ascension-sweep{position:absolute;left:68%;top:48%;width:min(94vw,110vh);aspect-ratio:1;translate:-50% -50%;pointer-events:none;opacity:0}
+.ascension-rays{z-index:3;border-radius:50%;background:repeating-conic-gradient(from 0deg,transparent 0deg 8deg,rgba(203,158,88,.44) 8.3deg 9deg,rgba(255,244,203,.42) 9.4deg 10deg,transparent 10.4deg 22.5deg);mask-image:radial-gradient(circle,transparent 0 33%,#000 48%,transparent 74%)}
+.ascension-crown{z-index:3;overflow:visible;filter:drop-shadow(0 0 5px rgba(248,212,137,.65))}
+.ascension-crown circle,.ascension-crown path{fill:none;stroke:#c89f61;vector-effect:non-scaling-stroke}
+.ascension-crown .crown-inner{stroke:#fff3cd;stroke-width:2.5}
+.ascension-crown .crown-outer{stroke-width:1.6;stroke-dasharray:80 18 3 18}
+.ascension-crown .crown-rays{stroke:#e7c17a;stroke-width:2.3;stroke-linecap:round}
+.ascension-motes{z-index:5}
+.ascension-sweep{z-index:5;overflow:visible;filter:drop-shadow(0 0 5px rgba(247,216,152,.8))}
+.ascension-sweep path{fill:none;stroke:url(#ascension-gradient);stroke-linecap:round;vector-effect:non-scaling-stroke}
+.ascension-sweep .sweep-trace{stroke-width:1.2;opacity:.48}
+.ascension-sweep .sweep-current{stroke-width:3.5;stroke-dasharray:180 1150}
+.playing .ascension-sweep{animation:ascension-motes 12s ease-out both}
+.playing .ascension-sweep .sweep-current{animation:ascension-flow 4s linear infinite}
+.playing .ascension-sweep .sweep-current.reverse{animation-direction:reverse;animation-duration:4.7s}
+.ascension-motes i{position:absolute;left:var(--x);top:var(--y);width:var(--size);height:var(--size);background:#fff7dc;box-shadow:0 0 5px 2px rgba(255,241,197,.9),0 0 17px 5px rgba(217,174,105,.48);transform:rotate(45deg) scale(.7);opacity:.3}
+.ascension-motes i:before,.ascension-motes i:after{content:"";position:absolute;inset:42% -220%;background:linear-gradient(90deg,transparent,#f8e0a8,transparent)}
+.ascension-motes i:after{transform:rotate(90deg)}
+.playing .ascension-rays{animation:ascension-rays 12s ease-out both}
+.playing .ascension-crown{animation:ascension-crown 12s ease-out both}
+.playing .ascension-crown .crown-orbit{transform-origin:500px 500px;animation:spin 24s linear infinite}
+.playing .ascension-motes{animation:ascension-motes 12s ease-out both}
+.playing .ascension-motes i{animation:ascension-glint 3.6s ease-in-out infinite alternate;animation-delay:var(--delay)}
+@keyframes ascension-rays{0%,38%{opacity:0;transform:scale(.78) rotate(-10deg)}55%{opacity:.72;transform:scale(1) rotate(0)}72%{opacity:.65;transform:scale(1.04) rotate(3deg)}100%{opacity:.48;transform:scale(1.06) rotate(6deg)}}
+@keyframes ascension-crown{0%,37%{opacity:0;transform:scale(.72) rotate(-12deg)}55%{opacity:.9;transform:scale(1) rotate(0)}74%{opacity:.72;transform:scale(1.03) rotate(4deg)}100%{opacity:.57;transform:scale(1.04) rotate(6deg)}}
+@keyframes ascension-motes{0%,40%{opacity:0;transform:scale(.9)}58%{opacity:.9;transform:scale(1)}100%{opacity:.7;transform:scale(1.03)}}
+@keyframes ascension-glint{from{opacity:.3;transform:rotate(45deg) scale(.65)}to{opacity:1;transform:rotate(45deg) scale(1.25)}}
+@keyframes ascension-flow{to{stroke-dashoffset:-1330}}
+/* A single crescendo: concentric glyphs form behind the figure while two
+   gold ribbons sweep around her, followed by one expanding wave. */
+.aureole{position:absolute;z-index:3;left:68%;top:47%;width:min(74vw,92vh);aspect-ratio:1;translate:-50% -50%;pointer-events:none;opacity:0;overflow:visible;filter:drop-shadow(0 0 7px rgba(246,207,124,.65))}
+.aureole circle,.aureole path,.aureole polygon{fill:none;vector-effect:non-scaling-stroke;stroke:#b68540;stroke-width:1.7}
+.aureole .bright{stroke:#fff5cc;stroke-width:2.4;filter:drop-shadow(0 0 3px #d5a558)}
+.aureole .inner-ring,.aureole .outer-ring{transform-origin:center;transform-box:fill-box}
+.playing .aureole{animation:aureole-rise 12s ease-out both}
+.playing .aureole .outer-ring{animation:spin 9s linear infinite}
+.playing .aureole .inner-ring{animation:spin 6s linear infinite reverse}
+.ribbon{position:absolute;z-index:5;left:68%;top:53%;width:min(73vw,93vh);height:min(30vw,35vh);translate:-50% -50%;pointer-events:none;opacity:0;overflow:visible;filter:drop-shadow(0 0 5px #d6a857)}
+.ribbon path{fill:none;stroke:#d2a452;stroke-width:2;stroke-linecap:round;stroke-dasharray:135 1150}
+.ribbon .thread{stroke:#fff5d3;stroke-width:4;stroke-dasharray:65 1220}
+.playing .ribbon{animation:ribbon-rise 12s ease-out both}
+.playing .ribbon path{animation:ribbon-travel 2.6s linear infinite}
+.playing .ribbon .thread{animation-duration:2s;animation-direction:reverse}
+.shockwave{position:absolute;z-index:5;left:68%;top:51%;width:min(43vw,58vh);aspect-ratio:1;translate:-50% -50%;pointer-events:none;opacity:0;border:2px solid rgba(223,177,95,.9);border-radius:50%;box-shadow:0 0 14px 3px rgba(247,216,143,.65),inset 0 0 16px rgba(255,244,210,.6)}
+.shockwave:after{content:"";position:absolute;inset:3%;border:1px solid rgba(255,248,222,.95);border-radius:50%}
+.playing .shockwave{animation:wave-release 12s ease-out both}
+.playing .seal{animation:spectacle-seal 12s ease-out both}
+@keyframes aureole-rise{0%,8%{opacity:0;transform:scale(.34) rotate(-60deg)}22%{opacity:.72;transform:scale(.82) rotate(-12deg)}32%{opacity:.94;transform:scale(1.04) rotate(4deg)}42%{opacity:.62;transform:scale(1.12) rotate(12deg)}60%{opacity:.32;transform:scale(1.12) rotate(18deg)}83%,100%{opacity:.16;transform:scale(1.08) rotate(22deg)}}
+@keyframes ribbon-rise{0%,12%{opacity:0;transform:rotate(-14deg) scale(.6)}23%{opacity:.65;transform:rotate(-9deg) scale(.9)}34%{opacity:1;transform:rotate(5deg) scale(1)}50%{opacity:.65;transform:rotate(13deg) scale(1.06)}67%,100%{opacity:0;transform:rotate(18deg) scale(1.09)}}
+@keyframes ribbon-travel{to{stroke-dashoffset:-1285}}
+@keyframes wave-release{0%,31%{opacity:0;transform:scale(.25)}34%{opacity:.85;transform:scale(.4)}44%{opacity:.4;transform:scale(1.7)}54%,100%{opacity:0;transform:scale(2.5)}}
+@keyframes spectacle-seal{0%{opacity:.04;transform:scale(.55) rotate(-70deg)}22%{opacity:.48;transform:scale(.92) rotate(-12deg)}34%{opacity:.64;transform:scale(1.08) rotate(9deg)}52%{opacity:.3;transform:scale(1.02) rotate(14deg)}82%,100%{opacity:.18;transform:scale(1.02) rotate(20deg)}}
+/* The portrait and temple travel at different speeds through the shot.
+   Both forms share one plane so the transformation never slips out of place. */
+.camera:before{transform-origin:68% 45%;will-change:transform}
+.stage.playing .camera:before{animation:temple-parallax 12s ease-in-out both}
+.character-wrap{transform-origin:68% 48%;will-change:transform,opacity}
+.playing .character-wrap{animation:transformation-presence 12s ease-out both,portrait-parallax 12s ease-in-out both}
+@keyframes temple-parallax{0%{transform:scale(1.05) translateX(1%)}38%{transform:scale(1.08) translateX(-1%)}70%{transform:scale(1.04) translateX(.5%)}100%{transform:scale(1.03) translateX(0)}}
+@keyframes portrait-parallax{0%{transform:perspective(1400px) translate3d(-1%,.8%,0) rotateY(-3deg) rotateZ(-.6deg)}30%{transform:perspective(1400px) translate3d(.3%,0,20px) rotateY(1deg) rotateZ(.3deg)}42%{transform:perspective(1400px) translate3d(1%,-.7%,36px) rotateY(3deg) rotateZ(.7deg)}65%{transform:perspective(1400px) translate3d(-.3%,-.3%,12px) rotateY(-1deg) rotateZ(-.2deg)}100%{transform:perspective(1400px) translate3d(0,-.6%,0) rotateY(0) rotateZ(0)}}
+/* Quiet, high-contrast typography keeps the final reveal legible over light. */
+body{font-family:"Microsoft YaHei UI","Microsoft YaHei","Segoe UI",sans-serif}
+.topline{font-size:11px;font-weight:500;letter-spacing:.13em;color:#44493f}
+.copy{left:8.7%;width:43%}
+.eyebrow{font-family:"Microsoft YaHei UI","Microsoft YaHei",sans-serif;font-size:12px;font-weight:500;letter-spacing:.18em;color:#544b3b;gap:12px}
+.eyebrow:before{width:26px;background:#9d7a42}
+h1{font-family:"Baskerville Old Face","Palatino Linotype",Georgia,serif;font-size:clamp(54px,7.6vw,116px);font-weight:400;line-height:.96;letter-spacing:.035em;color:#1f3635;margin:20px 0 19px;text-shadow:0 2px 20px rgba(255,255,248,.7)}
+h1 span{font-weight:inherit}
+.subtitle{font-family:"Microsoft YaHei UI","Microsoft YaHei",sans-serif;font-size:clamp(14px,1.2vw,18px);font-weight:400;letter-spacing:.12em;line-height:1.6;color:#303d39}
+.divider{width:clamp(110px,13vw,190px);margin:26px 0 0;background:linear-gradient(90deg,#9c7842,#d1b98d,transparent)}
+.status{font-size:12px;font-weight:500;letter-spacing:.09em;color:#35413a}
+button{font-family:"Microsoft YaHei UI","Microsoft YaHei",sans-serif;font-size:12px;letter-spacing:.03em;color:#293831}
+.controls button{color:#706a5d;border-color:rgba(151,133,105,.3);background:rgba(250,247,237,.52);box-shadow:0 3px 12px rgba(58,49,40,.05)}
+.controls button:hover{background:rgba(255,250,240,.78);border-color:rgba(148,117,72,.7)}
+@media(max-width:700px){.topline{font-size:10px;letter-spacing:.1em}.copy{left:7%;width:67%}h1{font-size:clamp(44px,9vw,64px);letter-spacing:.02em}.subtitle{font-size:14px;letter-spacing:.08em}.status{font-size:11px;letter-spacing:.04em}}
+/* Keep moving flecks and threads behind the portrait so they cannot
+   appear as white spots on the face or hands. */
+.light-petals,.silk-light,.ascension-motes,.ascension-sweep,.ribbon{z-index:3}
+/* Leave a clear, feathered area around the figure even during the
+   semi-transparent transformation, when background particles can show through. */
+#stars{mask-image:radial-gradient(ellipse 27% 65% at 68% 50%,transparent 0 80%,#000 100%)}
+.aureole{mask-image:radial-gradient(ellipse 29% 49% at 50% 50%,transparent 0 82%,#000 100%)}
+.light-petals,.ascension-motes{mask-image:radial-gradient(ellipse 43% 72% at 50% 50%,transparent 0 80%,#000 100%)}
+@media(max-width:700px){#stars{mask-image:radial-gradient(ellipse 39% 65% at 72% 50%,transparent 0 80%,#000 100%)}}
+/* One instrument ring at the crescendo and one crown afterwards: the older
+   concentric layers obscured the character and duplicated the temple halo. */
+.seal,.orbit,.awakening-sigil,.awakening-rays,.awakening-wave,.transformation-halo,.shockwave{display:none}
+/* A short burst of pearlescent energy frames the transformation without tinting the portrait. */
+.dragon-awakening{position:absolute;z-index:3;left:68%;top:48%;width:min(92vw,112vh);aspect-ratio:1;translate:-50% -50%;overflow:visible;pointer-events:none;opacity:0}
+.dragon-awakening .arc{fill:none;stroke:url(#dragon-energy);stroke-linecap:round;vector-effect:non-scaling-stroke;stroke-width:3;stroke-dasharray:160 950;filter:drop-shadow(0 0 5px #e6d7ff)}
+.dragon-awakening .fine{stroke-width:1.3;stroke-dasharray:50 1050;opacity:.75}
+.dragon-awakening .crystal{fill:#fffaf2;stroke:#c4a8d9;stroke-width:1.5;filter:drop-shadow(0 0 5px #eee0ff);transform-box:fill-box;transform-origin:center;opacity:0}
+.playing .dragon-awakening{animation:dragon-release 12s ease-out both}
+.playing .dragon-awakening .arc{animation:dragon-current 1.8s linear infinite}
+.playing .dragon-awakening .reverse{animation-direction:reverse;animation-duration:2.3s}
+.playing .dragon-awakening .crystal{animation:dragon-shard 12s ease-out both;animation-delay:var(--delay,0s)}
+@keyframes dragon-release{0%,22%{opacity:0;transform:scale(.72) rotate(-12deg)}30%{opacity:.55;transform:scale(.9) rotate(-5deg)}36%{opacity:1;transform:scale(1) rotate(0)}45%{opacity:.8;transform:scale(1.12) rotate(8deg)}58%,100%{opacity:0;transform:scale(1.24) rotate(13deg)}}
+@keyframes dragon-current{to{stroke-dashoffset:-1110}}
+@keyframes dragon-shard{0%,24%{opacity:0;transform:scale(.35) translateY(20px) rotate(-20deg)}35%{opacity:.95;transform:scale(1) translateY(0) rotate(0)}47%{opacity:.8;transform:scale(.85) translateY(-18px) rotate(25deg)}58%,100%{opacity:0;transform:scale(.4) translateY(-38px) rotate(50deg)}}
+@media(prefers-reduced-motion:reduce){.dragon-awakening{display:none}}
+/* Radiant sacred crest: gold and amethyst structure is strong enough to read against the bright temple. */
+.sacred-burst{position:absolute;z-index:3;left:68%;top:48%;width:min(90vw,112vh);aspect-ratio:1;translate:-50% -50%;overflow:visible;pointer-events:none;opacity:0;filter:drop-shadow(0 0 6px rgba(140,85,192,.8)) drop-shadow(0 0 17px rgba(241,183,76,.8));mask-image:radial-gradient(ellipse 29% 46% at 50% 50%,transparent 0 72%,#000 100%)}
+.sacred-burst circle,.sacred-burst path{fill:none;stroke:url(#sacred-fire);vector-effect:non-scaling-stroke;stroke-linecap:round}
+.sacred-burst .crest{stroke-width:3.8}
+.sacred-burst .crest-fine{stroke-width:2;stroke-dasharray:7 13}
+.sacred-burst .burst-rays{stroke-width:5}
+.sacred-burst .runes{fill:#fff3cf;stroke:#a46e9e;stroke-width:2}
+.sacred-burst .ring-spin{transform-origin:500px 500px}
+.playing .sacred-burst{animation:sacred-burst-reveal 12s ease-out both}
+.playing .sacred-burst .ring-spin{animation:spin 5s linear infinite}
+.playing .sacred-burst .burst-rays{animation:sacred-rays-pulse 1.1s ease-in-out infinite alternate}
+@keyframes sacred-burst-reveal{0%,20%{opacity:0;transform:scale(.62) rotate(-18deg)}27%{opacity:.52;transform:scale(.82) rotate(-8deg)}34%{opacity:1;transform:scale(1) rotate(0)}39%{opacity:1;transform:scale(1.05) rotate(3deg)}48%{opacity:.7;transform:scale(1.16) rotate(9deg)}61%,100%{opacity:0;transform:scale(1.28) rotate(15deg)}}
+@keyframes sacred-rays-pulse{from{opacity:.48}to{opacity:1}}
+.dragon-awakening .arc{stroke-width:5;filter:drop-shadow(0 0 4px #8662c6) drop-shadow(0 0 12px #e2c2ff)}
+.dragon-awakening .fine{stroke-width:2}
+.dragon-awakening .crystal{stroke:#9470b7;stroke-width:2;filter:drop-shadow(0 0 5px #b77ee2) drop-shadow(0 0 12px #fff1c7)}
+@media(prefers-reduced-motion:reduce){.sacred-burst{display:none}}
+/* Keep the original portrait lighting intact; transformation glows stay behind it. */
+.character-wrap:after{display:none}
+.transformation-light,.awakening-column,.flare{z-index:3}
+.transformation-light{filter:opacity(.24)}
+.awakening-column{filter:blur(10px) opacity(.24)}
+.rays{opacity:.16}
+@media(prefers-reduced-motion:reduce){.aureole,.ribbon,.shockwave,.awakening-sigil,.awakening-rays,.awakening-column,.awakening-wave,.silk-light,.light-petals,.winglight,.ascension-rays,.ascension-crown,.ascension-motes,.ascension-sweep{display:none}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}.character-wrap,.copy,.orbit{opacity:1;transform:none;filter:none}.copy{transform:translateY(-43%)}.beam,.scanner,.rays,.flare,.seal{display:none}}
+@media(prefers-reduced-motion:reduce){.character-before,.transformation-light,.transformation-halo{display:none}.character-after{opacity:1;mask-image:none}}
+@media(prefers-reduced-motion:reduce){.stage.playing .camera,.stage.playing .camera:before,.playing .character-wrap{animation:none!important;transform:none}.character-wrap{opacity:1}}
+/* Keep status updates available to assistive technology without a visible label. */
+.status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);clip-path:inset(50%);white-space:nowrap;border:0}
+/* A three-beat release: white-hot backlight, prismatic rays, then a fast
+   expanding shock ring. Every layer stays behind the character artwork. */
+.nova-burst{position:absolute;z-index:3;left:68%;top:48%;width:max(145vw,170vh);aspect-ratio:1;translate:-50% -50%;pointer-events:none;opacity:0;mix-blend-mode:screen}
+.nova-burst:before{content:"";position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(from -8deg,transparent 0deg 3.2deg,rgba(255,250,225,.96) 3.35deg 3.75deg,rgba(247,212,153,.9) 3.9deg 4.35deg,transparent 4.6deg 8deg,rgba(192,154,232,.7) 8.15deg 8.45deg,transparent 8.8deg 12deg);mask-image:radial-gradient(circle,transparent 0 24%,#000 34% 64%,transparent 74%);filter:drop-shadow(0 0 12px rgba(255,239,194,.8))}
+.nova-burst:after{content:"";position:absolute;inset:16%;border:2px solid rgba(255,250,231,.96);border-radius:50%;box-shadow:0 0 7px 2px #fff9e7,0 0 26px 8px rgba(255,225,154,.9),0 0 74px 18px rgba(201,155,241,.65),inset 0 0 32px rgba(255,245,215,.68);mask-image:radial-gradient(circle,#000 0 61%,transparent 76%)}
+.nova-column{position:absolute;left:47%;top:2%;width:6%;height:96%;background:linear-gradient(90deg,transparent,rgba(255,225,164,.7) 25%,#fffdf3 46%,#fff 50%,#f8e9ff 56%,rgba(212,180,255,.72) 75%,transparent);filter:blur(7px);box-shadow:0 0 50px 16px rgba(255,239,194,.66)}
+.nova-shock{position:absolute;left:50%;top:50%;width:38%;aspect-ratio:1;translate:-50% -50%;border:3px solid #fffdf2;border-radius:50%;box-shadow:0 0 8px 3px #fff,0 0 25px 8px rgba(255,230,166,.95),0 0 58px 15px rgba(196,148,245,.72),inset 0 0 22px rgba(255,248,219,.85)}
+.nova-corona{position:absolute;left:50%;top:50%;width:54%;aspect-ratio:1;translate:-50% -50%;border:1px solid rgba(255,248,218,.95);border-radius:50%;box-shadow:0 0 20px 5px rgba(255,234,181,.75),0 0 58px 12px rgba(180,143,237,.55)}
+.playing .nova-burst{animation:nova-release 12s cubic-bezier(.12,.78,.18,1) both}
+.playing .nova-shock{animation:nova-shock 12s cubic-bezier(.12,.72,.16,1) both}
+.playing .nova-corona{animation:nova-corona 12s cubic-bezier(.16,.72,.2,1) both}
+.playing .nova-burst:before{animation:nova-rays 12s cubic-bezier(.12,.78,.18,1) both}
+.playing .nova-burst:after{animation:nova-ring 12s cubic-bezier(.12,.72,.16,1) both}
+.playing .nova-column{animation:nova-column 12s ease-out both}
+.sacred-burst{filter:drop-shadow(0 0 11px rgba(147,83,208,.98)) drop-shadow(0 0 28px rgba(255,199,78,.98)) drop-shadow(0 0 52px rgba(255,245,210,.72))}
+.sacred-burst .crest{stroke-width:5}
+.sacred-burst .burst-rays{stroke-width:7}
+.sacred-burst .runes{stroke-width:2.8}
+.dragon-awakening .arc{stroke-width:7;filter:drop-shadow(0 0 8px #a76bdb) drop-shadow(0 0 20px #fff0cf)}
+.dragon-awakening .crystal{filter:drop-shadow(0 0 9px #c886ff) drop-shadow(0 0 22px #fff2c8)}
+@keyframes nova-release{0%,23%{opacity:0;transform:scale(.36) rotate(-12deg)}29%{opacity:.48;transform:scale(.62) rotate(-7deg)}34%{opacity:1;transform:scale(.92) rotate(0)}37%{opacity:.96;transform:scale(1.04) rotate(3deg)}44%{opacity:.52;transform:scale(1.18) rotate(9deg)}55%,100%{opacity:0;transform:scale(1.34) rotate(16deg)}}
+@keyframes nova-rays{0%,25%{transform:rotate(-18deg) scale(.58)}34%{transform:rotate(-3deg) scale(1)}40%{transform:rotate(7deg) scale(1.08)}56%{transform:rotate(19deg) scale(1.3)}100%{transform:rotate(24deg) scale(1.38)}}
+@keyframes nova-shock{0%,31%{opacity:0;transform:scale(.16)}34%{opacity:1;transform:scale(.25)}43%{opacity:.9;transform:scale(1.28)}54%{opacity:.22;transform:scale(2.45)}61%,100%{opacity:0;transform:scale(3.1)}}
+@keyframes nova-corona{0%,27%{opacity:0;transform:scale(.48) rotate(-18deg)}34%{opacity:.95;transform:scale(.7) rotate(0)}42%{opacity:.8;transform:scale(1.04) rotate(12deg)}55%{opacity:.16;transform:scale(1.42) rotate(28deg)}61%,100%{opacity:0;transform:scale(1.6) rotate(35deg)}}
+@keyframes nova-ring{0%,29%{opacity:0;transform:scale(.45) rotate(-15deg)}34%{opacity:1;transform:scale(.68) rotate(0)}44%{opacity:.9;transform:scale(1.08) rotate(14deg)}56%{opacity:.1;transform:scale(1.42) rotate(28deg)}61%,100%{opacity:0;transform:scale(1.6) rotate(34deg)}}
+@keyframes nova-column{0%,28%{opacity:0;transform:scaleX(.12)}34%{opacity:.82;transform:scaleX(1)}37%{opacity:.72;transform:scaleX(1.18)}44%{opacity:.22;transform:scaleX(.72)}52%,100%{opacity:0;transform:scaleX(.35)}}
+@media(max-width:700px){.nova-burst{width:190vw;top:48%}.nova-column{width:9%;left:45.5%}.nova-burst:before{mask-image:radial-gradient(circle,transparent 0 29%,#000 39% 68%,transparent 78%)}}
+@media(prefers-reduced-motion:reduce){.nova-burst{display:none}}
+/* The sanctuary is intentionally bright, so give the burst a deeper
+   amethyst edge and a broad pearl core for clear separation at the climax. */
+.nova-burst{background:radial-gradient(circle,rgba(255,252,235,.78) 0%,rgba(255,234,183,.55) 15%,rgba(232,204,246,.36) 31%,rgba(166,124,216,.18) 45%,transparent 63%);filter:drop-shadow(0 0 32px rgba(255,242,205,.92)) drop-shadow(0 0 68px rgba(176,126,227,.68))}
+.nova-burst:before{background:repeating-conic-gradient(from -8deg,transparent 0deg 2.3deg,rgba(255,255,246,.98) 2.45deg 3.15deg,rgba(255,215,145,.98) 3.25deg 4deg,transparent 4.2deg 7deg,rgba(208,169,255,.9) 7.2deg 7.8deg,transparent 8.1deg 11deg);mask-image:radial-gradient(circle,transparent 0 20%,#000 30% 68%,transparent 78%);filter:drop-shadow(0 0 17px rgba(255,245,213,.98)) drop-shadow(0 0 32px rgba(183,132,237,.9))}
+.nova-shock{width:43%;border-width:5px;box-shadow:0 0 12px 5px #fff,0 0 38px 13px rgba(255,230,166,1),0 0 86px 24px rgba(196,148,245,.9),inset 0 0 28px rgba(255,248,219,.95)}
+.nova-corona{border-width:2px;box-shadow:0 0 28px 9px rgba(255,234,181,.96),0 0 82px 20px rgba(180,143,237,.82)}
+.playing .character-before,.playing .character-after{filter:drop-shadow(0 0 10px rgba(255,247,215,.9)) drop-shadow(0 0 26px rgba(190,143,238,.72))}
+@media(prefers-reduced-motion:reduce){.playing .character-before,.playing .character-after{filter:none}}
+/* Keep the radiant shapes but avoid repeatedly blurring oversized layers
+   while the camera is moving. Gradients provide the glow in one pass. */
+.nova-burst{width:min(120vw,135vh);mix-blend-mode:normal;filter:none;will-change:transform,opacity}
+.nova-burst:before{filter:none;will-change:transform}
+.nova-burst:after{mask-image:none;box-shadow:0 0 22px 5px rgba(255,224,165,.9),0 0 48px 10px rgba(200,158,241,.6);will-change:transform,opacity}
+.nova-column{filter:none;box-shadow:none;background:linear-gradient(90deg,transparent,rgba(255,224,173,.25),rgba(255,255,244,.75),rgba(225,201,255,.3),transparent);will-change:transform,opacity}
+.nova-shock{box-shadow:0 0 18px 5px #fff4d8,0 0 42px 10px rgba(198,154,243,.75);will-change:transform,opacity}
+.nova-corona{box-shadow:0 0 22px 5px rgba(255,234,181,.9),0 0 42px 10px rgba(180,143,237,.65);will-change:transform,opacity}
+.sacred-burst{filter:none;mask-image:none}
+.dragon-awakening .arc,.dragon-awakening .crystal{filter:none}
+.playing .character-before,.playing .character-after{filter:none}
+.atmosphere,.edge-light{filter:none}
+.playing .silk-light path,.playing .winglight .winglight-current,.playing .ascension-sweep .sweep-current,.playing .ribbon path,.playing .dragon-awakening .arc{animation:none}
+.silk-light path,.winglight .winglight-current,.ascension-sweep,.ribbon{filter:none}
+#stars{mask-image:none}
+@keyframes after-form{0%,29%{opacity:0}34%{opacity:.25}39%{opacity:.82}45%,100%{opacity:1}}
+/* Gather the light into a single release as the new form appears. */
+@keyframes nova-release{
+  0%,23%{opacity:0;transform:scale(.36) rotate(-12deg)}
+  29%{opacity:.3;transform:scale(.62) rotate(-7deg)}
+  35%{opacity:.76;transform:scale(.92) rotate(0)}
+  38%{opacity:1;transform:scale(1.04) rotate(3deg)}
+  43%{opacity:.78;transform:scale(1.16) rotate(8deg)}
+  55%,100%{opacity:0;transform:scale(1.34) rotate(16deg)}
+}
+@media(max-width:700px){.nova-burst{width:150vw}}
+@media(prefers-reduced-motion:reduce){.nova-burst{display:none}.character-after{opacity:1}}
+/* A single bright exposure reveals the new form. */
+.transformation-flash{position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0;background:radial-gradient(ellipse at 68% 45%,#fff 0%,#fffef5 25%,rgba(255,248,222,.96) 48%,rgba(255,245,221,.7) 75%,rgba(255,247,232,.48) 100%);will-change:opacity}
+.playing .transformation-flash{animation:dazzling-flash 12s ease-in-out both}
+@keyframes dazzling-flash{
+  0%,29%{opacity:0}
+  33%{opacity:.12}
+  36%{opacity:.48}
+  38%{opacity:.96}
+  40%{opacity:.83}
+  44%{opacity:.28}
+  49%,100%{opacity:0}
+}
+.stage.finished .transformation-flash{animation:none!important;opacity:0!important}
+@media(prefers-reduced-motion:reduce){.transformation-flash{display:none}}
+/* The launcher's waiting scene continues gently after the reveal. The final
+   pose and title stay in place while the camera, halo and particles move. */
+.stage.finished.waiting .camera{animation:waiting-camera 10s ease-in-out infinite alternate!important;animation-play-state:running!important}
+.stage.finished.waiting .character-wrap{opacity:1;animation:waiting-portrait 5.8s ease-in-out infinite alternate!important;animation-play-state:running!important}
+.stage.finished.waiting .character-before{opacity:0;animation:none!important}
+.stage.finished.waiting .character-after{opacity:1;animation:none!important;mask-image:none}
+.stage.finished.waiting .copy{opacity:1;transform:translateY(-43%);animation:none!important}
+.stage.finished.waiting .divine-light{animation:waiting-light 5s ease-in-out infinite alternate!important;animation-play-state:running!important}
+.stage.finished.waiting .ascension-crown .crown-orbit,.stage.finished.waiting .ascension-motes i{animation-play-state:running!important}
+@keyframes waiting-camera{from{transform:scale(1.02)}to{transform:scale(1.045) translate(-.35%,.18%)}}
+@keyframes waiting-portrait{from{transform:perspective(1400px) translate3d(0,-.6%,0)}to{transform:perspective(1400px) translate3d(0,-1.25%,0)}}
+@keyframes waiting-light{from{opacity:.48;transform:scale(1.02)}to{opacity:.83;transform:scale(1.09)}}
+@media(prefers-reduced-motion:reduce){.stage.finished.waiting .camera,.stage.finished.waiting .character-wrap{animation:none!important;transform:none}.stage.finished.waiting .divine-light{animation:none!important;opacity:.48;transform:scale(1.02)}.stage.finished.waiting .ascension-crown .crown-orbit,.stage.finished.waiting .ascension-motes i{animation-play-state:paused!important}}
+</style>
+</head>
+<body>
+<main class="stage" id="stage" aria-label="Codex 白龙序章启动动画">
+  <div class="camera" aria-hidden="true">
+  <div class="nova-burst" aria-hidden="true"><i class="nova-column"></i><i class="nova-shock"></i><i class="nova-corona"></i></div>
+  <div class="transformation-halo" aria-hidden="true"><i></i><i></i><i></i></div>
+  <svg class="silk-light" viewBox="0 0 1000 1000" aria-hidden="true"><defs><linearGradient id="silk-gradient" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c8b4e2"/><stop offset=".32" stop-color="#fff5e4"/><stop offset=".62" stop-color="#e2b9d5"/><stop offset="1" stop-color="#d6b77a"/></linearGradient></defs><path d="M48 727 C180 475 342 829 574 688 S865 402 955 582"/><path class="silk-glow" d="M48 727 C180 475 342 829 574 688 S865 402 955 582"/><path d="M67 801 C215 580 356 917 621 726 S831 453 971 650"/></svg>
+  <div class="light-petals" aria-hidden="true"><i style="--x:14%;--y:56%;--size:7px;--angle:25deg;--drift:28px;--delay:-.7s"></i><i style="--x:23%;--y:30%;--size:5px;--angle:64deg;--drift:-20px;--delay:-2s"></i><i style="--x:31%;--y:72%;--size:9px;--angle:-22deg;--drift:34px;--delay:-1.1s"></i><i style="--x:39%;--y:18%;--size:5px;--angle:42deg;--drift:15px;--delay:-3s"></i><i style="--x:60%;--y:22%;--size:6px;--angle:15deg;--drift:25px;--delay:-1.6s"></i><i style="--x:75%;--y:36%;--size:8px;--angle:72deg;--drift:-24px;--delay:-.4s"></i><i style="--x:84%;--y:62%;--size:6px;--angle:-12deg;--drift:18px;--delay:-2.7s"></i><i style="--x:68%;--y:76%;--size:9px;--angle:48deg;--drift:-32px;--delay:-1.8s"></i><i style="--x:20%;--y:82%;--size:5px;--angle:30deg;--drift:20px;--delay:-3.4s"></i><i style="--x:88%;--y:20%;--size:5px;--angle:-48deg;--drift:-12px;--delay:-2.3s"></i></div>
+  <svg class="awakening-sigil" viewBox="0 0 600 600" aria-hidden="true"><g class="glyph outer-glyph"><circle cx="300" cy="300" r="278"/><circle class="light" cx="300" cy="300" r="263" stroke-dasharray="15 9 2 9"/><circle cx="300" cy="300" r="242" stroke-dasharray="62 9 4 9"/><path d="M300 12v50 M300 538v50 M12 300h50 M538 300h50 M96 96l35 35 M469 469l35 35 M504 96l-35 35 M131 469l-35 35"/><polygon class="light" points="300,14 311,38 300,62 289,38"/><polygon class="light" points="586,300 562,311 538,300 562,289"/><polygon class="light" points="300,586 289,562 300,538 311,562"/><polygon class="light" points="14,300 38,289 62,300 38,311"/></g><g class="glyph inner-glyph"><circle cx="300" cy="300" r="214" stroke-dasharray="8 8"/><circle class="light" cx="300" cy="300" r="198"/><polygon points="300,82 489,409 111,409"/><polygon points="300,518 111,191 489,191"/><path class="light" d="M300 100l14 38-14 17-14-17z M500 300l-38 14-17-14 17-14z M300 500l-14-38 14-17 14 17z M100 300l38-14 17 14-17 14z"/></g></svg><div class="awakening-rays" aria-hidden="true"></div><div class="awakening-column" aria-hidden="true"></div><div class="awakening-wave" aria-hidden="true"></div>
+  <div class="atmosphere"></div><div class="grid"></div><div class="rays" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><canvas id="stars" aria-hidden="true"></canvas><div class="divine-light" aria-hidden="true"></div>
+  <svg class="seal" viewBox="0 0 600 600" aria-hidden="true"><g class="outer"><circle cx="300" cy="300" r="274"/><circle class="thin" cx="300" cy="300" r="257" stroke-dasharray="2 11"/><circle class="thin" cx="300" cy="300" r="241"/><path d="M300 13v52 M300 535v52 M13 300h52 M535 300h52 M97 97l34 34 M469 469l34 34 M503 97l-34 34 M131 469l-34 34"/><polygon class="thin" points="300,25 538,163 538,437 300,575 62,437 62,163"/><polygon class="accent" points="300,44 324,79 300,94 276,79"/><polygon class="accent" points="556,300 521,324 506,300 521,276"/><polygon class="accent" points="300,556 276,521 300,506 324,521"/><polygon class="accent" points="44,300 79,276 94,300 79,324"/></g><g class="inner"><circle cx="300" cy="300" r="202" stroke-dasharray="22 9 3 9"/><circle class="thin" cx="300" cy="300" r="181"/><polygon class="thin" points="300,104 470,398 130,398"/><polygon class="thin" points="300,496 130,202 470,202"/><circle class="thin" cx="300" cy="300" r="151"/></g></svg><div class="flare" aria-hidden="true"></div>
+  <div class="orbit" aria-hidden="true"><i class="orbital-mark"></i></div><div class="beam" aria-hidden="true"></div><div class="scanner" aria-hidden="true"></div>
+  <div class="ascension-rays" aria-hidden="true"></div>
+  <svg class="ascension-crown" viewBox="0 0 1000 1000" aria-hidden="true"><circle class="crown-inner" cx="500" cy="500" r="402"/><circle class="crown-outer" cx="500" cy="500" r="421"/><g class="crown-orbit crown-rays"><path d="M500 45v65 M500 890v65 M45 500h65 M890 500h65 M178 178l46 46 M776 776l46 46 M822 178l-46 46 M224 776l-46 46"/><path d="M326 85l18 44 M674 871l-18-44 M85 674l44-18 M871 326l-44 18 M674 85l-18 44 M326 871l18-44 M85 326l44 18 M871 674l-44-18"/></g></svg>
+  <svg class="ascension-sweep" viewBox="0 0 1000 1000" aria-hidden="true"><defs><linearGradient id="ascension-gradient" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#c9934d"/><stop offset=".35" stop-color="#fff8dc"/><stop offset=".72" stop-color="#f7d897"/><stop offset="1" stop-color="#b9e6df"/></linearGradient></defs><path class="sweep-trace" d="M390 130 C190 155 78 300 92 485 C103 650 190 763 355 818"/><path class="sweep-current" d="M390 130 C190 155 78 300 92 485 C103 650 190 763 355 818"/><path class="sweep-trace" d="M610 130 C810 155 922 300 908 485 C897 650 810 763 645 818"/><path class="sweep-current reverse" d="M610 130 C810 155 922 300 908 485 C897 650 810 763 645 818"/></svg>
+  <div class="ascension-motes" aria-hidden="true"><i style="--x:12%;--y:24%;--size:5px;--delay:-.4s"></i><i style="--x:19%;--y:60%;--size:4px;--delay:-1.7s"></i><i style="--x:30%;--y:13%;--size:4px;--delay:-2.2s"></i><i style="--x:86%;--y:25%;--size:5px;--delay:-2.9s"></i><i style="--x:91%;--y:56%;--size:4px;--delay:-1.2s"></i><i style="--x:78%;--y:77%;--size:4px;--delay:-2.5s"></i><i style="--x:25%;--y:82%;--size:3px;--delay:-.9s"></i></div>
+  <svg class="aureole" viewBox="0 0 600 600" aria-hidden="true"><g class="outer-ring"><circle cx="300" cy="300" r="284"/><circle class="bright" cx="300" cy="300" r="270" stroke-dasharray="4 13 2 13"/><circle cx="300" cy="300" r="246" stroke-dasharray="40 12 3 12"/><path d="M300 5v48 M300 547v48 M5 300h48 M547 300h48 M92 92l34 34 M474 474l34 34 M508 92l-34 34 M126 474l-34 34"/><polygon class="bright" points="300,12 311,32 300,52 289,32"/><polygon class="bright" points="300,548 311,568 300,588 289,568"/><polygon class="bright" points="12,300 32,289 52,300 32,311"/><polygon class="bright" points="548,300 568,289 588,300 568,311"/></g><g class="inner-ring"><circle cx="300" cy="300" r="219" stroke-dasharray="18 8 2 8"/><circle class="bright" cx="300" cy="300" r="208" stroke-dasharray="2 10"/><polygon points="300,78 492,411 108,411"/><polygon points="300,522 108,189 492,189"/></g></svg>
+  <svg class="winglight" viewBox="0 0 1000 600" preserveAspectRatio="none" aria-hidden="true"><defs><linearGradient id="winglight-gradient"><stop stop-color="#e5b56e"/><stop offset=".36" stop-color="#fff6d6"/><stop offset=".68" stop-color="#c9f3ef"/><stop offset="1" stop-color="#bfb2de"/></linearGradient></defs><path class="winglight-trace" d="M486 304 C380 210 212 120 48 172 C140 180 183 235 195 286 C244 249 322 255 399 303"/><path class="winglight-current" d="M486 304 C380 210 212 120 48 172 C140 180 183 235 195 286 C244 249 322 255 399 303"/><path class="winglight-trace" d="M514 304 C620 210 788 120 952 172 C860 180 817 235 805 286 C756 249 678 255 601 303"/><path class="winglight-current reverse" d="M514 304 C620 210 788 120 952 172 C860 180 817 235 805 286 C756 249 678 255 601 303"/><g transform="translate(120 175)"><path class="winglight-star" d="M0 -10 L2 -2 L10 0 L2 2 L0 10 L-2 2 L-10 0 L-2 -2 Z"/></g><g transform="translate(885 190)"><path class="winglight-star" d="M0 -8 L2 -2 L8 0 L2 2 L0 8 L-2 2 L-8 0 L-2 -2 Z"/></g><g transform="translate(805 285)"><path class="winglight-star" d="M0 -6 L1 -1 L6 0 L1 1 L0 6 L-1 1 L-6 0 L-1 -1 Z"/></g></svg>
+  <svg class="sacred-burst" viewBox="0 0 1000 1000" aria-hidden="true"><defs><linearGradient id="sacred-fire" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#ab69d5"/><stop offset=".32" stop-color="#d59a3d"/><stop offset=".6" stop-color="#fff1bb"/><stop offset="1" stop-color="#a06acb"/></linearGradient></defs><g class="ring-spin"><circle class="crest" cx="500" cy="500" r="405"/><circle class="crest-fine" cx="500" cy="500" r="384"/><path class="crest" d="M500 75 L514 99 L500 123 L486 99 Z M500 877 L514 901 L500 925 L486 901 Z M75 500 L99 486 L123 500 L99 514 Z M877 500 L901 486 L925 500 L901 514 Z"/><path class="runes" d="M213 194 l12 20 20 12 -20 12 -12 20 -12 -20 -20 -12 20 -12 Z M787 194 l12 20 20 12 -20 12 -12 20 -12 -20 -20 -12 20 -12 Z M213 742 l12 20 20 12 -20 12 -12 20 -12 -20 -20 -12 20 -12 Z M787 742 l12 20 20 12 -20 12 -12 20 -12 -20 -20 -12 20 -12 Z"/></g><g class="burst-rays"><path d="M 500 40 V 135 M 500 865 V 960 M 40 500 H 135 M 865 500 H 960 M 175 175 L 242 242 M 825 175 L 758 242 M 175 825 L 242 758 M 825 825 L 758 758"/><path d="M 340 67 L 360 126 M 660 67 L 640 126 M 67 340 L 126 360 M 933 340 L 874 360 M 67 660 L 126 640 M 933 660 L 874 640"/></g></svg>
+  <svg class="dragon-awakening" viewBox="0 0 1000 1000" aria-hidden="true"><defs><linearGradient id="dragon-energy" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#b4dff4"/><stop offset=".34" stop-color="#fff9ee"/><stop offset=".7" stop-color="#c8b4eb"/><stop offset="1" stop-color="#e8c58f"/></linearGradient></defs><path class="arc" d="M 140 700 C 30 455 145 210 370 95"/><path class="arc reverse" d="M 858 700 C 970 455 855 210 630 95"/><path class="arc fine reverse" d="M 75 625 C 55 365 180 170 370 100"/><path class="arc fine" d="M 925 625 C 945 365 820 170 630 100"/><path class="crystal" style="--delay:0s" d="M 140 390 l 7 18 18 7 -18 7 -7 18 -7 -18 -18 -7 18 -7 z"/><path class="crystal" style="--delay:.12s" d="M 860 390 l 6 16 16 6 -16 6 -6 16 -6 -16 -16 -6 16 -6 z"/><path class="crystal" style="--delay:.22s" d="M 220 665 l 5 13 13 5 -13 5 -5 13 -5 -13 -13 -5 13 -5 z"/><path class="crystal" style="--delay:.08s" d="M 785 650 l 5 14 14 5 -14 5 -5 14 -5 -14 -14 -5 14 -5 z"/><path class="crystal" style="--delay:.18s" d="M 312 178 l 4 11 11 4 -11 4 -4 11 -4 -11 -11 -4 11 -4 z"/><path class="crystal" style="--delay:.26s" d="M 690 178 l 4 11 11 4 -11 4 -4 11 -4 -11 -11 -4 11 -4 z"/></svg>
+  <div class="character-wrap" aria-hidden="true"><div class="edge-light"></div><svg class="character character-before" viewBox="0 0 1024 1536" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><image href="character-before.png" width="1024" height="1536" onerror="this.closest('.character-wrap').classList.add('before-missing')"/></svg><svg class="character character-after" viewBox="0 0 1024 1536" preserveAspectRatio="xMidYMax meet" aria-hidden="true"><image href="character-dragon.png" width="1024" height="1536"/></svg></div><svg class="ribbon" viewBox="0 0 900 280" aria-hidden="true"><path d="M15 160C170 20 695 18 880 140S700 257 433 219 120 54 20 180"/><path class="thread" d="M15 160C170 20 695 18 880 140S700 257 433 219 120 54 20 180"/><path d="M34 105C200 242 726 255 865 115S652 19 439 62 183 222 34 105"/></svg><div class="shockwave" aria-hidden="true"></div><div class="transformation-light" aria-hidden="true"></div>
+  </div>
+  <div class="transformation-flash" aria-hidden="true"></div>
+  <div class="topline" aria-hidden="true"><span>CODEX</span><span>白龙序章</span></div>
+  <div class="copy"><div class="eyebrow">白龙序章</div><h1>CO<span>DEX</span></h1><p class="subtitle">灵感，正在苏醒</p><div class="divider"></div></div>
+  <div class="frame"></div>
+  <div class="status" aria-live="polite"><i aria-hidden="true"></i><span id="status">启动序列 · 正在扫描</span></div>
+  <div class="controls"><button id="sound" type="button">开启声音</button><button class="replay" id="replay" type="button">重新播放</button><button class="skip" id="skip" type="button">跳过 <span aria-hidden="true">· Esc</span></button></div>
+</main>
+<script>
+(()=>{
+  const stage=document.getElementById('stage'),canvas=document.getElementById('stars'),ctx=canvas.getContext('2d'),status=document.getElementById('status');
+  const params=new URLSearchParams(location.search),launcher=params.get('launcher')==='1',preview=launcher&&params.get('preview')==='1',waitForWindow=launcher&&!preview&&params.get('wait')==='1';
+  const reduce=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if(launcher) stage.classList.add('launcher');
+  let timers=[],frame,start,particles=[],w=0,h=0;
+  let soundContext,soundNodes=[],soundMaster,soundEnabled=true,soundPlaying=false,sequenceStart=0,roomImpulse;
+  const soundButton=document.getElementById('sound');
+  function updateSoundButton(){if(soundButton.disabled)return;const audible=soundEnabled&&soundContext&&soundContext.state==='running';soundButton.textContent=audible?'静音':'开启声音'}
+  function stopSound(){
+    const nodes=soundNodes,master=soundMaster;
+    soundNodes=[];soundMaster=null;soundPlaying=false;
+    if(!soundContext)return;
+    const now=soundContext.currentTime,fade=.12;
+    if(master){
+      try{if(master.gain.cancelAndHoldAtTime)master.gain.cancelAndHoldAtTime(now);else{master.gain.cancelScheduledValues(now);master.gain.setValueAtTime(master.gain.value,now)}master.gain.linearRampToValueAtTime(0,now+fade)}catch{}
+      setTimeout(()=>{try{master.disconnect()}catch{}},(fade+.1)*1000);
+    }
+    for(const node of nodes){try{node.stop(now+fade)}catch{}}
+  }
+  function prepareRoom(){
+    if(roomImpulse||!soundContext)return;
+    const length=Math.floor(soundContext.sampleRate*1.8),impulse=soundContext.createBuffer(2,length,soundContext.sampleRate);
+    let seed=7219;
+    for(let channel=0;channel<2;channel++){
+      const data=impulse.getChannelData(channel);
+      for(let i=0;i<length;i++){seed=(seed*16807)%2147483647;const decay=1-i/length;data[i]=(seed/1073741823.5-1)*decay*decay*decay*.22}
+    }
+    roomImpulse=impulse;
+  }
+  function soundSequence(){
+    if(!soundContext||soundContext.state!=='running'||!soundEnabled||soundPlaying||stage.classList.contains('finished'))return;
+    soundPlaying=true;
+    const elapsed=(performance.now()-sequenceStart)/1000,now=soundContext.currentTime;
+    const master=soundContext.createGain();master.gain.setValueAtTime(.85,now);master.connect(soundContext.destination);soundMaster=master;
+    // A small stereo room makes the sustained voices and bells feel distant,
+    // while keeping every source behind the same fade-out for mute and skip.
+    const room=soundContext.createConvolver(),wet=soundContext.createGain();
+    prepareRoom();room.buffer=roomImpulse;wet.gain.value=.22;room.connect(wet);wet.connect(master);
+    // Four slow, overlapping chords underpin the reveal; bells rise with the
+    // light and meet the transformation's peak at about 4.3 seconds.
+    const pads=[
+      [0,146.83,4.1,.013],[.12,220,4,.010],[.25,293.66,3.9,.009],[.45,369.99,3.7,.007],
+      [3.15,196,3.65,.011],[3.25,293.66,3.55,.009],[3.35,369.99,3.45,.008],[3.5,440,3.25,.006],
+      [6.1,123.47,3.4,.010],[6.2,185,3.3,.008],[6.3,293.66,3.2,.008],[6.4,440,3.1,.005],
+      [8.55,146.83,3.35,.010],[8.65,220,3.25,.008],[8.75,369.99,3.15,.007],[8.9,587.33,3,.004]
+    ];
+    const bells=[[.65,440,2.5,.010],[1.65,587.33,2.4,.009],[2.65,739.99,2.1,.008],[3.55,440,2.5,.010],[4.05,587.33,2.7,.012],[4.35,739.99,2.9,.013],[5.5,659.26,2.6,.009],[6.85,587.33,2.5,.008],[8.15,440,2.5,.007],[9.4,587.33,2.4,.006]];
+    function voice(at,hz,duration,volume,kind,index){
+      const position=Math.max(0,elapsed-at);
+      if(position>=duration)return;
+      const begin=now+Math.max(0,at-elapsed),remaining=duration-position;
+      const attack=kind==='pad'?Math.min(.95,duration*.32):.055;
+      const envelope=t=>{
+        if(t<=0||t>=duration)return 0;
+        if(t<attack)return volume*Math.sin(t/attack*Math.PI/2);
+        if(kind==='bell')return volume*Math.exp(-2.8*(t-attack)/(duration-attack))*Math.min(1,(duration-t)/.22);
+        const release=Math.min(1.45,duration*.42);
+        return volume*(t>duration-release?Math.sin((duration-t)/release*Math.PI/2):1);
+      };
+      const parts=kind==='pad'?[['sine',1,.68,-4],['sine',1,.32,4],['triangle',2,.08,0]]:[['sine',1,1,0],['sine',2,.18,2],['sine',3.01,.045,-3]];
+      for(const [type,ratio,level,detune] of parts){
+        const oscillator=soundContext.createOscillator(),gain=soundContext.createGain();
+        oscillator.type=type;oscillator.frequency.setValueAtTime(hz*ratio,begin);oscillator.detune.setValueAtTime(detune+(index%2?1:-1),begin);
+        gain.gain.setValueAtTime(0,begin);
+        const fadeIn=Math.min(.04,remaining*.2);
+        gain.gain.linearRampToValueAtTime(envelope(position+fadeIn)*level,begin+fadeIn);
+        for(let t=position+fadeIn+.1;t<duration;t+=.1)gain.gain.linearRampToValueAtTime(envelope(t)*level,begin+t-position);
+        gain.gain.linearRampToValueAtTime(0,begin+remaining);
+        oscillator.connect(gain);gain.connect(master);gain.connect(room);
+        oscillator.onended=()=>{oscillator.disconnect();gain.disconnect()};
+        oscillator.start(begin);oscillator.stop(begin+remaining+.02);soundNodes.push(oscillator);
+      }
+    }
+    pads.forEach((note,index)=>voice(...note,'pad',index));
+    bells.forEach((note,index)=>voice(...note,'bell',index));
+  }
+  function trySound(){
+    if(!soundEnabled)return;
+    try{const AudioType=window.AudioContext||window.webkitAudioContext;if(!AudioType){soundButton.textContent='声音不可用';soundButton.disabled=true;return}if(!soundContext)soundContext=new AudioType();updateSoundButton();if(soundContext.state==='running')soundSequence();else soundContext.resume().then(()=>{updateSoundButton();soundSequence()}).catch(updateSoundButton)}catch{soundButton.textContent='声音不可用';soundButton.disabled=true}
+  }
+  function resize(){const d=Math.min(window.devicePixelRatio||1,1);w=innerWidth;h=innerHeight;canvas.width=w*d;canvas.height=h*d;ctx.setTransform(d,0,0,d,0,0);particles=Array.from({length:Math.min(100,Math.round(w*h/9000))},()=>({x:Math.random()*w,y:Math.random()*h,r:.5+Math.random()*1.9,s:.4+Math.random()*.9,a:.25+Math.random()*.65,p:Math.random()*6.28,angle:Math.random()*6.28,distance:80+Math.random()*Math.max(w,h)*.55}));}
+  function draw(t){ctx.clearRect(0,0,w,h);const elapsed=(t-sequenceStart)/1000,cx=w*.68,cy=h*.49;for(const p of particles){const a=p.a*(.65+.35*Math.sin(elapsed*2.6+p.p));let x,y;if(elapsed<3.5){const travel=Math.max(0,1-elapsed/3.5);x=cx+Math.cos(p.angle)*p.distance*travel;y=cy+Math.sin(p.angle)*p.distance*travel}else{const dt=elapsed-3.5,u=Math.min(1,dt/2),spread=u*u*(3-2*u);x=((cx+(p.x-cx)*spread+dt*p.s*18*spread)%w+w)%w;y=((cy+(p.y-cy)*spread-dt*p.s*26*spread)%h+h)%h}const rx=w*(w<=700?.39:.27),ry=h*.65,centerX=w*(w<=700?.72:.68);if(((x-centerX)/rx)**2+((y-h*.5)/ry)**2<.64)continue;ctx.fillStyle=`rgba(255,248,220,${a})`;ctx.strokeStyle=`rgba(238,200,124,${a*.75})`;ctx.lineWidth=p.r*.7;if(elapsed<3.5){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(p.angle)*p.s*24,y+Math.sin(p.angle)*p.s*24);ctx.stroke()}ctx.beginPath();ctx.arc(x,y,p.r,0,Math.PI*2);ctx.fill()}frame=requestAnimationFrame(draw)}
+  function clearTimers(){timers.forEach(clearTimeout);timers=[]}
+  function finish(manual=false){clearTimers();stopSound();const waiting=launcher&&!preview&&!manual&&!reduce;if(!waiting)cancelAnimationFrame(frame);stage.classList.toggle('waiting',waiting);stage.classList.add('finished');if(launcher&&preview){status.textContent='预览结束';setTimeout(()=>window.close(),120);return}status.textContent=launcher?'正在打开 Codex':'动画播放完毕';if(launcher)document.title='CodexAnimationFinished'}
+  function play(){clearTimers();stopSound();cancelAnimationFrame(frame);stage.classList.remove('finished','playing','waiting');document.getElementById('skip').firstChild.textContent='跳过 ';void stage.offsetWidth;stage.classList.add('playing');sequenceStart=performance.now();status.textContent='启动序列 · 圣光初现';for(const el of stage.querySelectorAll('.grid')){el.style.animation='none';void el.offsetWidth;el.style.animation=''}if(!reduce){frame=requestAnimationFrame(draw);timers.push(setTimeout(()=>status.textContent='启动序列 · 圣光变身',3200));timers.push(setTimeout(()=>status.textContent='启动序列 · 白龙觉醒',6500));timers.push(setTimeout(()=>status.textContent='启动序列 · 即将开启',9500));trySound()}timers.push(setTimeout(()=>finish(),reduce?900:12000))}
+  soundButton.addEventListener('click',()=>{if(soundEnabled&&soundContext&&soundContext.state==='running'){soundEnabled=false;stopSound();updateSoundButton()}else{soundEnabled=true;trySound();updateSoundButton()}});
+  document.getElementById('skip').addEventListener('click',()=>finish(true));document.getElementById('replay').addEventListener('click',play);window.addEventListener('keydown',e=>{if(e.key==='Escape')finish(true)});window.addEventListener('resize',resize);window.addEventListener('pagehide',()=>{cancelAnimationFrame(frame);stopSound()});resize();
+  if(waitForWindow){
+    // Decode the large image assets before the launcher exposes the scene.
+    // The browser can move across monitors with different DPI while it is
+    // being prepared, so wait for its viewport to settle before playback.
+    let hiddenOnce=false,prepared=false,armed=false,started=false,assetsReady=false,lastGeometry='',stableSince=performance.now();
+    const artwork=['celestial-background.png','character-before.png','character-dragon.png'].map(src=>{const img=new Image();img.src=src;return img});
+    const decoding=Promise.all(artwork.map(img=>img.decode().catch(()=>{})));
+    Promise.race([Promise.all([decoding,document.fonts.ready]),new Promise(resolve=>setTimeout(resolve,10000))]).then(()=>{
+      if(!reduce&&soundEnabled){try{const AudioType=window.AudioContext||window.webkitAudioContext;if(AudioType){if(!soundContext)soundContext=new AudioType();prepareRoom()}}catch{}}
+      assetsReady=true;onVisibility();
+    });
+    const onVisibility=()=>{
+      if(document.hidden){hiddenOnce=true;if(assetsReady){if(prepared){armed=true;document.title='CodexAnimationArmed'}else document.title='CodexAnimationReady'}}
+      else if(armed&&!started){started=true;clearInterval(positionWatch);document.removeEventListener('visibilitychange',onVisibility);resize();play();document.title='CodexAnimationPlaying'}
+      else if(hiddenOnce&&!prepared&&assetsReady){
+        const left=screen.availLeft??0,top=screen.availTop??0;
+        const visibleWidth=Math.min(screenX+outerWidth,left+screen.availWidth)-Math.max(screenX,left);
+        const visibleHeight=Math.min(screenY+outerHeight,top+screen.availHeight)-Math.max(screenY,top);
+        if(visibleWidth<100||visibleHeight<100)return;
+        const geometry=[screenX,screenY,outerWidth,outerHeight,innerWidth,innerHeight,devicePixelRatio].join(',');
+        if(geometry!==lastGeometry){lastGeometry=geometry;stableSince=performance.now()}
+        if(performance.now()-stableSince>=700){prepared=true;resize();requestAnimationFrame(()=>requestAnimationFrame(()=>{if(!armed)document.title='CodexAnimationPrepared'}))}
+      }
+    };
+    const positionWatch=setInterval(onVisibility,100);
+    document.addEventListener('visibilitychange',onVisibility);
+    onVisibility();
+  }else play();
+})();
+</script>
+</body>
+</html>
+

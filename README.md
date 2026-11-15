@@ -1,6 +1,6 @@
-# Codex 白龙启动动画
+# Codex 白龙娘启动动画
 
-一个独立的 Windows 启动入口：播放白龙变身动画，同时启动 Microsoft Store 版 Codex。动画结束后，画面渐隐并切换至最大化的 Codex 窗口。
+一个独立的 Windows 启动入口：播放白龙娘变身动画，同时启动 Microsoft Store 版 Codex。动画结束后，画面渐隐并切换至最大化的 Codex 窗口。
 
 这是非官方个人项目，与 OpenAI 及角色原作者没有官方关联。
 

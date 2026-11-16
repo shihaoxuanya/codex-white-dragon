@@ -483,6 +483,36 @@ button{font-family:"Microsoft YaHei UI","Microsoft YaHei",sans-serif;font-size:1
 @keyframes waiting-portrait{from{transform:perspective(1400px) translate3d(0,-.6%,0)}to{transform:perspective(1400px) translate3d(0,-1.25%,0)}}
 @keyframes waiting-light{from{opacity:.48;transform:scale(1.02)}to{opacity:.83;transform:scale(1.09)}}
 @media(prefers-reduced-motion:reduce){.stage.finished.waiting .camera,.stage.finished.waiting .character-wrap{animation:none!important;transform:none}.stage.finished.waiting .divine-light{animation:none!important;opacity:.48;transform:scale(1.02)}.stage.finished.waiting .ascension-crown .crown-orbit,.stage.finished.waiting .ascension-motes i{animation-play-state:paused!important}}
+
+/* Portrait monitors keep the full figure and effects centered rather than
+   using the wide-screen crop and camera movement. */
+@media (orientation: portrait) {
+  .camera, .character-wrap { transform-origin: 50% 50%; }
+  .stage.playing .camera { animation-name: portrait-screen-camera; }
+  .character { left: 5%; right: 5%; top: 18%; bottom: auto; width: 90%; height: 72%; }
+  .copy { left: 7%; top: 15%; width: 86%; }
+  h1 { font-size: clamp(40px, 8vw, 82px); }
+  .divine-light { left: 50%; top: 28%; width: min(80vw, 65vh); }
+  .transformation-light, .transformation-halo, .awakening-sigil, .awakening-rays,
+  .awakening-column, .awakening-wave, .silk-light, .light-petals, .winglight,
+  .ascension-rays, .ascension-crown, .ascension-motes, .ascension-sweep,
+  .aureole, .ribbon, .shockwave, .dragon-awakening, .sacred-burst, .nova-burst,
+  .seal, .orbit { left: 50%; }
+  .nova-burst { width: min(145vw, 100vh); }
+  .transformation-flash { background: radial-gradient(ellipse at 50% 45%,#fff 0%,#fffef5 25%,rgba(255,248,222,.96) 48%,rgba(255,245,221,.7) 75%,rgba(255,247,232,.48) 100%); }
+  #stars { mask-image: radial-gradient(ellipse 40% 55% at 50% 53%,transparent 0 80%,#000 100%); }
+}
+@keyframes portrait-screen-camera {
+  0% { transform: scale(1.02); }
+  22% { transform: scale(1.05); }
+  42%, 55% { transform: scale(1.10); }
+  78%, 100% { transform: scale(1.02); }
+}
+@media (orientation: portrait) and (max-width: 600px) {
+  .topline span:first-child { visibility: hidden; }
+  .status { bottom: 12%; }
+  .controls { bottom: 4%; }
+}
 </style>
 </head>
 <body>
@@ -596,7 +626,7 @@ button{font-family:"Microsoft YaHei UI","Microsoft YaHei",sans-serif;font-size:1
     try{const AudioType=window.AudioContext||window.webkitAudioContext;if(!AudioType){soundButton.textContent='声音不可用';soundButton.disabled=true;return}if(!soundContext)soundContext=new AudioType();updateSoundButton();if(soundContext.state==='running')soundSequence();else soundContext.resume().then(()=>{updateSoundButton();soundSequence()}).catch(updateSoundButton)}catch{soundButton.textContent='声音不可用';soundButton.disabled=true}
   }
   function resize(){const d=Math.min(window.devicePixelRatio||1,1);w=innerWidth;h=innerHeight;canvas.width=w*d;canvas.height=h*d;ctx.setTransform(d,0,0,d,0,0);particles=Array.from({length:Math.min(100,Math.round(w*h/9000))},()=>({x:Math.random()*w,y:Math.random()*h,r:.5+Math.random()*1.9,s:.4+Math.random()*.9,a:.25+Math.random()*.65,p:Math.random()*6.28,angle:Math.random()*6.28,distance:80+Math.random()*Math.max(w,h)*.55}));}
-  function draw(t){ctx.clearRect(0,0,w,h);const elapsed=(t-sequenceStart)/1000,cx=w*.68,cy=h*.49;for(const p of particles){const a=p.a*(.65+.35*Math.sin(elapsed*2.6+p.p));let x,y;if(elapsed<3.5){const travel=Math.max(0,1-elapsed/3.5);x=cx+Math.cos(p.angle)*p.distance*travel;y=cy+Math.sin(p.angle)*p.distance*travel}else{const dt=elapsed-3.5,u=Math.min(1,dt/2),spread=u*u*(3-2*u);x=((cx+(p.x-cx)*spread+dt*p.s*18*spread)%w+w)%w;y=((cy+(p.y-cy)*spread-dt*p.s*26*spread)%h+h)%h}const rx=w*(w<=700?.39:.27),ry=h*.65,centerX=w*(w<=700?.72:.68);if(((x-centerX)/rx)**2+((y-h*.5)/ry)**2<.64)continue;ctx.fillStyle=`rgba(255,248,220,${a})`;ctx.strokeStyle=`rgba(238,200,124,${a*.75})`;ctx.lineWidth=p.r*.7;if(elapsed<3.5){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(p.angle)*p.s*24,y+Math.sin(p.angle)*p.s*24);ctx.stroke()}ctx.beginPath();ctx.arc(x,y,p.r,0,Math.PI*2);ctx.fill()}frame=requestAnimationFrame(draw)}
+  function draw(t){ctx.clearRect(0,0,w,h);const elapsed=(t-sequenceStart)/1000,portrait=h>w,cx=w*(portrait?.5:.68),cy=h*.49;for(const p of particles){const a=p.a*(.65+.35*Math.sin(elapsed*2.6+p.p));let x,y;if(elapsed<3.5){const travel=Math.max(0,1-elapsed/3.5);x=cx+Math.cos(p.angle)*p.distance*travel;y=cy+Math.sin(p.angle)*p.distance*travel}else{const dt=elapsed-3.5,u=Math.min(1,dt/2),spread=u*u*(3-2*u);x=((cx+(p.x-cx)*spread+dt*p.s*18*spread)%w+w)%w;y=((cy+(p.y-cy)*spread-dt*p.s*26*spread)%h+h)%h}const rx=w*(portrait?.4:(w<=700?.39:.27)),ry=h*.65,centerX=w*(portrait?.5:(w<=700?.72:.68));if(((x-centerX)/rx)**2+((y-h*.5)/ry)**2<.64)continue;ctx.fillStyle=`rgba(255,248,220,${a})`;ctx.strokeStyle=`rgba(238,200,124,${a*.75})`;ctx.lineWidth=p.r*.7;if(elapsed<3.5){ctx.beginPath();ctx.moveTo(x,y);ctx.lineTo(x+Math.cos(p.angle)*p.s*24,y+Math.sin(p.angle)*p.s*24);ctx.stroke()}ctx.beginPath();ctx.arc(x,y,p.r,0,Math.PI*2);ctx.fill()}frame=requestAnimationFrame(draw)}
   function clearTimers(){timers.forEach(clearTimeout);timers=[]}
   function finish(manual=false){clearTimers();stopSound();const waiting=launcher&&!preview&&!manual&&!reduce;if(!waiting)cancelAnimationFrame(frame);stage.classList.toggle('waiting',waiting);stage.classList.add('finished');if(launcher&&preview){status.textContent='预览结束';setTimeout(()=>window.close(),120);return}status.textContent=launcher?'正在打开 Codex':'动画播放完毕';if(launcher)document.title='CodexAnimationFinished'}
   function play(){clearTimers();stopSound();cancelAnimationFrame(frame);stage.classList.remove('finished','playing','waiting');document.getElementById('skip').firstChild.textContent='跳过 ';void stage.offsetWidth;stage.classList.add('playing');sequenceStart=performance.now();status.textContent='启动序列 · 圣光初现';for(const el of stage.querySelectorAll('.grid')){el.style.animation='none';void el.offsetWidth;el.style.animation=''}if(!reduce){frame=requestAnimationFrame(draw);timers.push(setTimeout(()=>status.textContent='启动序列 · 圣光变身',3200));timers.push(setTimeout(()=>status.textContent='启动序列 · 白龙觉醒',6500));timers.push(setTimeout(()=>status.textContent='启动序列 · 即将开启',9500));trySound()}timers.push(setTimeout(()=>finish(),reduce?900:12000))}

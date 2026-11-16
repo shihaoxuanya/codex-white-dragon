@@ -24,6 +24,23 @@ function Write-LaunchLog([string]$message) {
 function Open-Codex {
     Start-Process -FilePath 'explorer.exe' -ArgumentList "shell:AppsFolder\$appId" | Out-Null
 }
+function Find-CodexTarget([IntPtr]$preferredHandle) {
+    # Keep the selected window while the overlay has focus; when a Codex
+    # window is in the foreground, prefer its process over other open windows.
+    $candidates = @(Get-Process -Name ChatGPT -ErrorAction SilentlyContinue | Where-Object {
+        $_.MainWindowHandle -ne [IntPtr]::Zero -and $_.Path -like '*\WindowsApps\OpenAI.Codex_*' -and
+        [CodexStartupWindow]::IsWindowVisible($_.MainWindowHandle) -and -not [CodexStartupWindow]::IsIconic($_.MainWindowHandle)
+    })
+    if ($candidates.Count -eq 0) { return $null }
+    $foregroundPid = [uint32]0
+    $null = [CodexStartupWindow]::GetWindowThreadProcessId([CodexStartupWindow]::GetForegroundWindow(), [ref]$foregroundPid)
+    $selected = $candidates | Where-Object { $_.Id -eq $foregroundPid } | Select-Object -First 1
+    if (-not $selected -and $preferredHandle -ne [IntPtr]::Zero) {
+        $selected = $candidates | Where-Object { $_.MainWindowHandle -eq $preferredHandle } | Select-Object -First 1
+    }
+    if (-not $selected) { $selected = $candidates | Select-Object -First 1 }
+    return $selected
+}
 function Start-ReadinessCheck([IntPtr]$windowHandle) {
     # Only inspect accessibility metadata; never read the editor's contents.
     Start-Job -ArgumentList ([long]$windowHandle) -ScriptBlock {
@@ -63,6 +80,7 @@ $edge = $null
 $overlayHandle = [IntPtr]::Zero
 $readyJob = $null
 $readyWindowHandle = [IntPtr]::Zero
+$target = $null
 try {
     $mutex = New-Object System.Threading.Mutex($false, 'Local\CodexStartupEffectLauncher')
     try { $ownsMutex = $mutex.WaitOne(0) } catch [System.Threading.AbandonedMutexException] { $ownsMutex = $true }
@@ -275,10 +293,7 @@ public static class CodexStartupWindow {
             if ($edge.HasExited -or -not [CodexStartupWindow]::IsWindow($overlayHandle)) { break }
             $title = New-Object System.Text.StringBuilder 256
             $null = [CodexStartupWindow]::GetWindowText($overlayHandle, $title, $title.Capacity)
-            $target = Get-Process -Name ChatGPT -ErrorAction SilentlyContinue | Where-Object {
-                $_.MainWindowHandle -ne [IntPtr]::Zero -and $_.Path -like '*\WindowsApps\OpenAI.Codex_*' -and
-                [CodexStartupWindow]::IsWindowVisible($_.MainWindowHandle) -and -not [CodexStartupWindow]::IsIconic($_.MainWindowHandle)
-            } | Select-Object -First 1
+            $target = Find-CodexTarget $(if ($target) { $target.MainWindowHandle } else { [IntPtr]::Zero })
             if ($target -and $title.ToString() -in @('CodexAnimationReady','CodexAnimationPrepared')) {
                 # Start the independent accessibility probe while the scene
                 # is still invisible, avoiding process startup during playback.
@@ -304,10 +319,7 @@ public static class CodexStartupWindow {
                         do {
                             Start-Sleep -Milliseconds 100
                             # Reacquire the target because startup may replace its window.
-                            $candidate = Get-Process -Name ChatGPT -ErrorAction SilentlyContinue | Where-Object {
-                                $_.MainWindowHandle -ne [IntPtr]::Zero -and $_.Path -like '*\WindowsApps\OpenAI.Codex_*' -and
-                                [CodexStartupWindow]::IsWindowVisible($_.MainWindowHandle) -and -not [CodexStartupWindow]::IsIconic($_.MainWindowHandle)
-                            } | Select-Object -First 1
+                            $candidate = Find-CodexTarget $(if ($target) { $target.MainWindowHandle } else { [IntPtr]::Zero })
                             if ($candidate -and $candidate.MainWindowHandle -ne $target.MainWindowHandle) {
                                 Write-LaunchLog 'Codex startup window changed; reacquiring target'
                                 $target = $candidate
@@ -468,10 +480,7 @@ public static class CodexPreviewWindow {
         if (-not $Preview -and $overlayHandle -ne [IntPtr]::Zero -and [CodexStartupWindow]::IsWindow($overlayHandle)) {
             try {
                 # Only the Store Codex process is eligible; never move its window.
-                $target = Get-Process -Name ChatGPT -ErrorAction SilentlyContinue | Where-Object {
-                    $_.MainWindowHandle -ne [IntPtr]::Zero -and $_.Path -like '*\WindowsApps\OpenAI.Codex_*' -and
-                    [CodexStartupWindow]::IsWindowVisible($_.MainWindowHandle) -and -not [CodexStartupWindow]::IsIconic($_.MainWindowHandle)
-                } | Select-Object -First 1
+                $target = Find-CodexTarget $(if ($target) { $target.MainWindowHandle } else { [IntPtr]::Zero })
                 if ($target) {
                     if ($target.MainWindowHandle -ne $readyWindowHandle) {
                         if ($null -ne $readyJob) { Remove-Job -Job $readyJob -Force -ErrorAction SilentlyContinue; $readyJob = $null }

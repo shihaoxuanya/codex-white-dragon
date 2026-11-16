@@ -222,8 +222,10 @@ public static class CodexStartupWindow {
             if (region == IntPtr.Zero) return false;
             if (SetWindowRgn(overlay, region, true) == 0) { DeleteObject(region); return false; }
         }
-        // Align the actual web viewport, not Edge's larger decorated window.
-        return SetWindowPos(overlay, new IntPtr(topmost ? -1 : -2), x, y, newWidth, newHeight, 0x210u | (frameChanged ? 0x20u : 0u));
+        // Allow the outer Edge window to exceed Windows' maximum tracking
+        // size: its frame can make a full-screen viewport taller than that limit.
+        // Without SWP_NOSENDCHANGING Windows clamps the viewport short.
+        return SetWindowPos(overlay, new IntPtr(topmost ? -1 : -2), x, y, newWidth, newHeight, 0x610u | (frameChanged ? 0x20u : 0u));
     }
     public static bool Matches(IntPtr overlay, IntPtr target) {
         Rect a, b;
